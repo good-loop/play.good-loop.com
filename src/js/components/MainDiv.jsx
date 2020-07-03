@@ -14,7 +14,6 @@ import MessageBar from '../base/components/MessageBar';
 import LoginWidget from '../base/components/LoginWidget';
 
 // Pages
-import PixiPage from './PixiPage';
 import {BasicAccountPage} from '../base/components/AccountPageWidgets';
 import E404Page from '../base/components/E404Page';
 import TestPage from '../base/components/TestPage';
@@ -31,13 +30,12 @@ C.setupDataStore();
 const PAGES = {
 	account: BasicAccountPage,
 	test: TestPage,
-	goose: PixiPage,
 	consequences: LobbyPage,
 	lobby: LobbyPage,
 	cards: AdCardsPage,
 };
 
-const DEFAULT_PAGE = 'lobby';
+const DEFAULT_PAGE = 'cards';
 
 const loginResponsePath = ['misc', 'login', 'response'];
 

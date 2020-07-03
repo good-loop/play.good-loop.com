@@ -1,0 +1,15 @@
+*.css
+node_modules
+web/build
+myloop.zipweb/privacy-policy.html
+bob.log
+boblog
+web/privacy-policy.html
+.vscode
+package-lock.json
+/bin/
+logs
+pom.bob.xml
+dependencies
+.settings
+config/version.properties

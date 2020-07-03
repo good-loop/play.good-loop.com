@@ -1,7 +1,7 @@
 {
   "name": "react-game-engine",
-  "version": "0.2.1",
-  "description": "React Game Engine",
+  "version": "0.1.0",
+  "description": "Cards Against Humanity",
   "author": "Daniel Winterstein",
   "repository": {
     "url": "https://github.com/winterstein/react-game-engine",
@@ -9,7 +9,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "^5.2.1",
     "easy-enums": "^1.1.7",
     "fscreen": "^1.0.2",
     "fast-json-patch": "^3.0.0-1",

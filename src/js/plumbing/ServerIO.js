@@ -4,7 +4,6 @@
  */
 import $ from 'jquery';
 import {SJTest, assert, assMatch} from 'sjtest';
-import {XId, encURI} from 'wwutils';
 import C from '../C.js';
 
 import Login from 'you-again';
