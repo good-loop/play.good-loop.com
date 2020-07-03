@@ -1,0 +1,15 @@
+{
+  "background_color": "black",
+  "description": "The Goose spawns creatures. We're not sure why.",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "img/icon/goose-icon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "name": "Goose",
+  "short_name": "Goose",
+  "start_url": "/index.html"
+}

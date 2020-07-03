@@ -1,0 +1,17 @@
+@import "../js/base/style/main-base.less";
+
+// main 
+
+.avoid-navbar {
+	margin-top:0px; // no navbar (yet)
+}
+
+// portrait
+.portrait {
+	display:none;
+}
+@media screen and (min-width: 320px) and (max-width: 700px) and (orientation: portrait) {
+	.portrait {
+		display:block;
+	}
+}
