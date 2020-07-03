@@ -1,10 +1,10 @@
 {
-  "name": "react-game-engine",
+  "name": "play.good-loop.com",
   "version": "0.1.0",
   "description": "Cards Against Humanity",
   "author": "Daniel Winterstein",
   "repository": {
-    "url": "https://github.com/winterstein/react-game-engine",
+    "url": "https://github.com/good-loop/play.good-loop.com",
     "type": "git"
   },
   "license": "MIT",
