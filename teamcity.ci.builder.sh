@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# WARNING - CI is NOT setup yet!!
-
 # TeamCity Continuous Integration Builder Template
 
 # Versions of this script are usually run by TeamCity, in response to a git commit.
 # The script uses ssh remote commands to target a server -- it does not affect the local machine.
 # For testing, the script can also be run from your local computer.
-
-#Version 1.3.0
+#Version 1.3.9
 # Latest Change -- Adding new dependency checks -- Attempting to create parity with production publisher template script
 
 #####  GENERAL SETTINGS
@@ -17,7 +14,7 @@
 ## Set the preferences according to your project's needs
 #####
 PROJECT_NAME='play.good-loop.com' #This name will be used to create/or/refer-to the directory of the project in /home/winterwell/
-GIT_REPO_URL='github.com:good-loop/play.good-loop.com' #
+GIT_REPO_URL='github.com:/good-loop/play.good-loop.com' #
 PROJECT_USES_BOB='yes'  #yes or no :: If 'yes', then you must also supply the name of the service which is used to start,stop,or restart the jvm
 NAME_OF_SERVICE='' # This can be blank, but if your service uses a JVM, then you must put in the service name which is used to start,stop,or restart the JVM on the server.
 PROJECT_USES_NPM='yes' # yes or no
@@ -26,7 +23,7 @@ PROJECT_USES_JERBIL='no' #yes or no
 PROJECT_USES_WWAPPBASE_SYMLINK='yes'
 
 # Where is the test server?
-TARGET_SERVERS=(play.winterwell.com)
+TARGET_SERVERS=(egan.good-loop.com)
 
 
 #####  SPECIFIC SETTINGS
@@ -34,7 +31,6 @@ TARGET_SERVERS=(play.winterwell.com)
 #####
 PROJECT_ROOT_ON_SERVER="/home/winterwell/$PROJECT_NAME"
 WWAPPBASE_REPO_PATH_ON_SERVER_DISK="/home/winterwell/wwappbase.js"
-
 
 
 ##### UNDENIABLY ESOTERIC SETTINGS
@@ -51,8 +47,10 @@ BOBWAREHOUSE_PATH='/home/winterwell/bobwarehouse'
 ##### FUNCTIONS
 ## Do not edit these unless you know what you are doing
 #####
+
 # Set empty array of attachments
 ATTACHMENTS=()
+
 # Email Function.  Sends emails to email addresses in $EMAIL_RECIPIENTS
 function send_alert_email {
     for email in ${EMAIL_RECIPIENTS[@]}; do
@@ -64,11 +62,12 @@ function send_alert_email {
     done
 }
 
+
 # Git Cleanup Function -- More of a classic 'I type this too much, it should be a function', Function.
 function git_hard_set_to_master {
-    cd $1 && git gc --prune=now
-    cd $1 && git pull origin master
-    cd $1 && git reset --hard FETCH_HEAD
+    ssh winterwell@$server "cd $1 && git gc --prune=now"
+    ssh winterwell@$server "cd $1 && git pull origin master"
+    ssh winterwell@$server "cd $1 && git reset --hard FETCH_HEAD"
 }
 
 
@@ -124,26 +123,6 @@ function check_maven_exists {
     fi
 }
 
-# Dependency Check Function - 'JAVA_HOME' is set correctly in this CLI environment - This Function's Version is 0.01
-function check_java_home {
-    BUILD_PROCESS_NAME='checking JAVA_HOME'
-    BUILD_STEP='verifying that $JAVA_HOME is properly exported'
-    if [[ $PROJECT_USES_BOB = 'yes' ]]; then
-        for server in ${TARGET_SERVERS[@]}; do
-            if [[ $(ssh winterwell@$server "printf $JAVA_HOME") = '' ]]; then
-                printf "\nYou must have an export in this user's .bashrc file which set's JAVA_HOME to the path where your java is installed\n\n\texport JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64\n\nand then\n\tsource ~/.bashrc\nAnd then retry this script\n"
-                send_alert_email
-                exit 0
-            fi
-            if [[ $(ssh winterwell@$server "printf $JAVA_HOME") != '/usr/lib/jvm/java-11-openjdk-amd64' ]]; then
-                printf "\nYour \$JAVA_HOME is not set to the correct path.  It should be /usr/lib/jvm/java-11-openjdk-amd64\n"
-                exit 0
-                send_alert_email
-            fi
-        done
-    fi
-}
-
 # Dependency Check Function - nodejs is at version 12.x - This Function's Version is 0.01
 function check_nodejs_version {
     BUILD_PROCESS_NAME='verifying nodejs version'
@@ -174,11 +153,11 @@ function check_for_wwappbasejs_location {
     fi
 }
 
-# Dependency Check Function - bobwarehouse directory has discrete 'code' repository nested inside of it. - This Function's Version is 0.01
+# Dependency Check Function - bobwarehouse directory has discrete 'code' repository nested inside of it. - This Function's Version is 1.01
 function check_for_code_repo_in_bobwarehouse {
     if [[ $PROJECT_USES_BOB = 'yes' ]]; then
         for server in ${TARGET_SERVERS[@]}; do
-            if ssh winterwell@$server '[! -d $BOBWAREHOUSE_PATH/code]'; then
+            if ssh winterwell@$server "[ ! -d $BOBWAREHOUSE_PATH/code ]"; then
                 printf "\n\nNo 'code' repo found in $BOBWAREHOUSE_PATH on $server.  Cloning now ...\n"
                 ssh winterwell@$server "cd $BOBWAREHOUSE_PATH && git clone git@git.winterwell.com:/winterwell-code code"
                 printf "\nContinuing without verifying successful cloning of the winterwell-code repo...\n"
@@ -187,30 +166,31 @@ function check_for_code_repo_in_bobwarehouse {
     fi
 }
 
-# Cleanup Git -- Ensure a clean and predictable git repo for building - This Function's Version is 0.01
+# Cleanup Git -- Ensure a clean and predictable git repo for building - This Function's Version is 1.00
 function cleanup_repo {
     for server in ${TARGET_SERVERS[@]}; do
         printf "\nCleaning $server 's local repository...\n"
-        ssh winterwell@$server "git_hard_set_to_master $PROJECT_ROOT_ON_SERVER"
+        git_hard_set_to_master $PROJECT_ROOT_ON_SERVER
     done
 }
 
-# Cleanup wwappbase.js 's repo -- Ensure that this repository is up to date and clean - This Function's Version is 0.01
+# Cleanup wwappbase.js 's repo -- Ensure that this repository is up to date and clean - This Function's Version is 1.00
 function cleanup_wwappbasejs_repo {
     if [[ $PROJECT_USES_WWAPPBASE_SYMLINK = 'yes' ]]; then
         for server in ${TARGET_SERVERS[@]}; do
             printf "\nCleaning $server 's local wwappbase.js repository\n"
-            ssh winterwell@$server "git_hard_set_to_master $WWAPPBASE_REPO_PATH_ON_SERVER_DISK"
+            git_hard_set_to_master $WWAPPBASE_REPO_PATH_ON_SERVER_DISK
         done
     fi
 }
 
-# Cleanup the repos nested inside of bobwarehouse  - This Function's Version is 0.01
+# Cleanup the repos nested inside of bobwarehouse  - This Function's Version is 1.00
 function cleanup_bobwarehouse_repos {
     if [[ $PROJECT_USES_BOB = 'yes' ]]; then
-	for server in ${TARGET_SERVERS[@]}; do
-		printf "\nEnsuring that the repos inside of bobwarehouse are up-to-date...\n"
-        	ssh winterwell@$server "for repo in $BOBWAREHOUSE_PATH/*/; do git_hard_reset_to_master $repo; done"
+	    for server in ${TARGET_SERVERS[@]}; do
+		    printf "\nEnsuring that the repos inside of bobwarehouse are up-to-date...\n"
+        	ssh winterwell@$server "for repo in $BOBWAREHOUSE_PATH/*/; do cd \$repo; git gc --prune=now; git pull origin master; git reset --hard FETCH_HEAD; done"
+        done
     fi
 }
 
@@ -262,7 +242,7 @@ function use_npm {
             # Ensuring that there are no residual npm error/debug logs in place
             ssh winterwell@$server "rm -rf /home/winterwell/.npm/_logs/*.log"
             printf "\nEnsuring all NPM Packages are in place on $server ...\n"
-            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && npm i &> $NPM_I_LOGFILE"
+            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && /usr/bin/npm i &> $NPM_I_LOGFILE"
             printf "\nChecking for errors while npm was attempting to get packages on $server ...\n"
             if [[ $(ssh winterwell@$server "grep -i 'error' $NPM_I_LOGFILE") = '' ]]; then
                 printf "\nNPM package installer check : No mention of 'error' in $NPM_I_LOGFILE on $server\n"
@@ -297,7 +277,7 @@ function use_webpack {
         BUILD_STEP='npm was running a weback process'
         for server in ${TARGET_SERVERS[@]}; do
             printf "\nNPM is now running a Webpack process on $server\n"
-            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && npm run compile &> $NPM_RUN_COMPILE_LOGFILE"
+            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && /usr/bin/npm run compile &> $NPM_RUN_COMPILE_LOGFILE"
             printf "\nChecking for errors that occurred during Webpacking process on $server ...\n"
             if [[ $(ssh winterwell@$server "cat $NPM_RUN_COMPILE_LOGFILE | grep -i 'error' | grep -iv 'ErrorAlert.jsx'") = '' ]]; then
                 printf "\nNo Webpacking errors detected on $server\n"
@@ -347,7 +327,6 @@ check_repo_exists
 check_bob_exists
 check_jerbil_exists
 check_maven_exists
-check_java_home
 check_nodejs_version
 check_for_wwappbasejs_location
 check_for_code_repo_in_bobwarehouse
