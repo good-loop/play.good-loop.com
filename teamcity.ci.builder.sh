@@ -16,7 +16,7 @@
 PROJECT_NAME='play.good-loop.com' #This name will be used to create/or/refer-to the directory of the project in /home/winterwell/
 GIT_REPO_URL='github.com:/good-loop/play.good-loop.com' #
 PROJECT_USES_BOB='yes'  #yes or no :: If 'yes', then you must also supply the name of the service which is used to start,stop,or restart the jvm
-NAME_OF_SERVICE='' # TODO Make a service. Hack: use tmux for now. This can be blank, but if your service uses a JVM, then you must put in the service name which is used to start,stop,or restart the JVM on the server.
+NAME_OF_SERVICE='play.good-loop.com' # This can be blank, but if your service uses a JVM, then you must put in the service name which is used to start,stop,or restart the JVM on the server.
 PROJECT_USES_NPM='yes' # yes or no
 PROJECT_USES_WEBPACK='yes' #yes or no
 PROJECT_USES_JERBIL='no' #yes or no

@@ -6,7 +6,7 @@ public class PlayConfig implements ISiteConfig {
 
 	@Override
 	public int getPort() {
-		return 8328;
+		return 8317;
 	}
 
 }
