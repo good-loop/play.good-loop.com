@@ -1,4 +1,4 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.goodloop.play.UnsplashConfig;
+import com.goodloop.play.UnsplashServlet;
 import com.winterwell.utils.io.ConfigFactory;
 
 public class UnsplashServletTest {

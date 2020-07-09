@@ -8,13 +8,10 @@ import com.winterwell.bob.tasks.MavenDependencyTask;
 import com.winterwell.bob.wwjobs.BuildWinterwellProject;
 import com.winterwell.utils.io.FileUtils;
 
-public class BuildRGE extends BuildWinterwellProject {
+public class BuildPlay extends BuildWinterwellProject {
 
-	public BuildRGE() {
-		super(FileUtils.or(
-				new File(FileUtils.getWinterwellDir(), "react-game-engine"),
-				FileUtils.getWorkingDirectory()),
-				"rge");
+	public BuildPlay() {
+		super("play.good-loop.com");
 	}
 
 	@Override
@@ -22,7 +19,7 @@ public class BuildRGE extends BuildWinterwellProject {
 		List<BuildTask> deps = super.getDependencies();
 		MavenDependencyTask mdt = new MavenDependencyTask();
 		mdt.addDependency("com.google.guava", "guava", "28.2-jre");
-		mdt.addDependency("org.eclipse.jetty.websocket:websocket-server:9.4.28.v20200408");
+//		mdt.addDependency("org.eclipse.jetty.websocket:websocket-server:9.4.28.v20200408");
 		deps.add(mdt);
 		return deps;
 	}

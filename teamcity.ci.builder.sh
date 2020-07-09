@@ -259,7 +259,7 @@ function use_npm {
             # Ensuring that there are no residual npm error/debug logs in place
             ssh winterwell@$server "rm -rf /home/winterwell/.npm/_logs/*.log"
             printf "\nEnsuring all NPM Packages are in place on $server ...\n"
-            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && /usr/bin/npm i &> $NPM_I_LOGFILE"
+            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && npm i &> $NPM_I_LOGFILE"
             printf "\nChecking for errors while npm was attempting to get packages on $server ...\n"
             if [[ $(ssh winterwell@$server "grep -i 'error' $NPM_I_LOGFILE") = '' ]]; then
                 printf "\nNPM package installer check : No mention of 'error' in $NPM_I_LOGFILE on $server\n"
@@ -294,7 +294,7 @@ function use_webpack {
         BUILD_STEP='npm was running a weback process'
         for server in ${TARGET_SERVERS[@]}; do
             printf "\nNPM is now running a Webpack process on $server\n"
-            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && /usr/bin/npm run compile &> $NPM_RUN_COMPILE_LOGFILE"
+            ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && npm run compile &> $NPM_RUN_COMPILE_LOGFILE"
             printf "\nChecking for errors that occurred during Webpacking process on $server ...\n"
             if [[ $(ssh winterwell@$server "cat $NPM_RUN_COMPILE_LOGFILE | grep -i 'error' | grep -iv 'ErrorAlert.jsx'") = '' ]]; then
                 printf "\nNo Webpacking errors detected on $server\n"

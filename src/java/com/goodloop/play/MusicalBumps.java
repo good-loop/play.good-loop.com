@@ -1,4 +1,4 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 
 import com.winterwell.utils.Proc;
 import com.winterwell.utils.Utils;

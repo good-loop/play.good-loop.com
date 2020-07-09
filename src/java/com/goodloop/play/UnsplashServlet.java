@@ -1,4 +1,4 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 
 import java.util.List;
 import java.util.Map;

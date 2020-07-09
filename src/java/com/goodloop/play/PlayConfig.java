@@ -1,8 +1,8 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 
 import com.winterwell.web.app.ISiteConfig;
 
-public class RGEConfig implements ISiteConfig {
+public class PlayConfig implements ISiteConfig {
 
 	@Override
 	public int getPort() {

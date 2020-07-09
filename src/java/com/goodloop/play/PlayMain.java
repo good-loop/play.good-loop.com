@@ -1,4 +1,4 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 import com.winterwell.utils.io.ConfigFactory;
 import com.winterwell.utils.log.Log;
 import com.winterwell.utils.log.LogConfig;
@@ -6,23 +6,23 @@ import com.winterwell.web.app.AMain;
 import com.winterwell.web.app.JettyLauncher;
 import com.winterwell.web.app.MasterServlet;
 
-public class RGEMain extends AMain<RGEConfig> {
+public class PlayMain extends AMain<PlayConfig> {
 
 	public static void main(String[] args) {
-		RGEMain m = new RGEMain();
+		PlayMain m = new PlayMain();
 		m.doMain(args);
 	}
 	
 	@Override
-	protected void init2(RGEConfig config) {
+	protected void init2(PlayConfig config) {
 		super.init2(config);
 		init3_gson();
 		// unsplash
 		UnsplashConfig us = ConfigFactory.get().getConfig(UnsplashConfig.class);		
 	}
 	
-	public RGEMain() {
-		super("rge", RGEConfig.class);
+	public PlayMain() {
+		super("rge", PlayConfig.class);
 		// limit logs
 		LogConfig lc = new LogConfig();
 		lc.fileMaxSize = "10mb";

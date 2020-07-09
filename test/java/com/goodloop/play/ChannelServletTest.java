@@ -1,4 +1,4 @@
-package com.goodloop.rge;
+package com.goodloop.play;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.goodloop.play.ChannelServlet;
 import com.winterwell.utils.containers.ArrayMap;
 
 public class ChannelServletTest {
