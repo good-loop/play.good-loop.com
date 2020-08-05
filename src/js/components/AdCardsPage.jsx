@@ -15,7 +15,7 @@ import PropControl, { setInputStatus } from '../base/components/PropControl';
 import { Alert, Button, Modal, ModalHeader, ModalBody, Card, CardBody, Row, Col, Container, Form, CardTitle } from 'reactstrap';
 import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
-import { stopEvent, copyTextToClipboard, randomPick } from '../base/utils/miscutils';
+import { stopEvent, copyTextToClipboard, randomPick, space } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
 import BG from './BG';
 import LobbyPage, { isInLobby, Peeps, Chatter } from './LobbyPage';
@@ -152,7 +152,7 @@ const AdvertiserView = ({game,member,pid}) => {
 		</h4>
 
 		<div className={rstage!=='create'? 'd-none' : null}>
-			<h4>Pick your best slogan</h4>
+			<h4>Pick your best slogan for</h4>
 			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
 			<YourHand member={member} game={game} pid={pid} />
 		</div>
@@ -186,7 +186,9 @@ const YourHand = ({member, game, pid}) => {
 	return (<Row>
 		{hand.map((card, i) => 
 			<Col key={i} className='pt-5'>
-				<Card body style={{cursor:"pointer"}} className={picked===card? 'mt-n5' : null} color='success' 
+				<Card body style={{cursor:"pointer"}} 
+					className={space('playing-card', picked===card && 'card-picked')} 
+					color='success' 
 					onClick={e => pickCard(card)} >
 					<h3>{card}</h3>
 				</Card>

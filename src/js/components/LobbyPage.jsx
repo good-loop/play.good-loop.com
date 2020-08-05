@@ -2,7 +2,7 @@
  * A convenient place for ad-hoc widget tests.
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import SJTest, {assert} from 'sjtest';
@@ -67,6 +67,7 @@ const LobbyPage = ({title}) => {
 	</Container></BG>);
 };
 
+let nameOnceFlag = false;
 
 const Entrance = ({join}) => {
 	if (join) {
@@ -74,9 +75,10 @@ const Entrance = ({join}) => {
 	}
 	// First enter your name
 	let name = DataStore.getValue("misc", "player", "name");
-	if ( ! name) { // stored?
+	if ( ! name && ! nameOnceFlag) { // stored? (one time only, so you can clear a value)
+		nameOnceFlag = true;
 		name = window.localStorage.getItem("name");
-		DataStore.setValue(["misc", "player", "name"], name, false);
+		DataStore.setValue(["misc", "player", "name"], name, false);		
 	}
 	if ( ! name) {
 		return <Card body className='mt-2 mb-2'>
@@ -116,9 +118,16 @@ const RoomOpen = ({room}) => {
 
 	<h2>{Room.isHost(room)? "Host" : "Guest "+getPeerId()}</h2>
 		
-	{Room.isHost(room)? <Button className='m-2' onClick={e => doStart(room)}>Everybody's In? - Let's Start!</Button> : null}
+	{Room.isHost(room)? 
+		<Button className='m-2' onClick={e => doStart(room)}>Everybody's In? - Let's Start!</Button> 
+		: <p>Please wait for the host ({peepName(room, room.oid)}) to kick-off the game.</p>}
 	</Card>;
 };
+
+const peepName = (room, pid) => {
+	let m = Room.member(room, pid);
+	return (m && m.name) || pid;
+}
 
 const Peeps = ({room}) => {
 	assert(room, "Peeps - no room!");
@@ -171,7 +180,9 @@ const ShareLink = ({room}) => {
 	// let shareText = $a.getAttribute('data-sharetext');
 	let u = window.location;
 	let href = u+"?join="+room.id;
-	return <>Room code: <a href={href} target='_blank' >{room.id}</a><Button className='ml-1' size='sm' onClick={e => copyTextToClipboard(href)}>copy link to clipboard</Button></>;
+	return (<>Room code: <a href={href} target='_blank' >{room.id}</a>
+	<Button className='ml-1' size='sm' onClick={e => copyTextToClipboard(href)}>&#x1f4cb; copy link to clipboard</Button>
+	</>);
 };
 
 // HACK

@@ -1,15 +1,15 @@
 {
   "background_color": "black",
-  "description": "The Goose spawns creatures. We're not sure why.",
+  "description": "A fun card game of recyling slogans.",
   "display": "fullscreen",
   "icons": [
     {
-      "src": "img/icon/goose-icon.png",
-      "sizes": "48x48",
+      "src": "img/logo.png",
+      "sizes": "64x64",
       "type": "image/png"
     }
   ],
-  "name": "Goose",
-  "short_name": "Goose",
+  "name": "Ads Against Humanity",
+  "short_name": "Ads Against Humanity",
   "start_url": "/index.html"
 }

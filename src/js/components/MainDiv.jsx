@@ -30,7 +30,6 @@ C.setupDataStore();
 const PAGES = {
 	account: BasicAccountPage,
 	test: TestPage,
-	consequences: LobbyPage,
 	lobby: LobbyPage,
 	cards: AdCardsPage,
 };

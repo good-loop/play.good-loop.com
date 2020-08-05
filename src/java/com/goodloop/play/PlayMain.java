@@ -6,6 +6,11 @@ import com.winterwell.web.app.AMain;
 import com.winterwell.web.app.JettyLauncher;
 import com.winterwell.web.app.MasterServlet;
 
+/**
+ * Ads Against Humanity backend -- provides chat and room sharing
+ * @author daniel
+ *
+ */
 public class PlayMain extends AMain<PlayConfig> {
 
 	public static void main(String[] args) {

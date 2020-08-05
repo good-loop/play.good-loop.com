@@ -6,7 +6,7 @@ const BG = ({src, children, opacity=0.5}) => {
 		backgroundImage: `url('${src}')`,
 		backgroundSize: 'cover',
 		height:"100%", width:"100%",
-		position:'fixed',
+		position:'absolute',
 		top:0, left:0,right:0,bottom:0,
 		zIndex:0,
 		opacity

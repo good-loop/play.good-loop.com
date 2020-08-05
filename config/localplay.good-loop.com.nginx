@@ -2,10 +2,10 @@
 server {
 	listen   80; ## listen for ipv4; this line is default and implied
 
-	root /home/team/winterwell/dw/web;
+	root /home/winterwell/play.good-loop.com/web;
 	index index.html;
 
-	server_name dw.winterwell.com localdw.winterwell.com;
+	server_name localplay.good-loop.com play.good-loop.com;
 
 	location / {
 			try_files $uri $uri/ index @backend;
