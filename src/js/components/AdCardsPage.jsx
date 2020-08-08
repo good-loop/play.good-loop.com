@@ -79,7 +79,10 @@ const ClientView = ({game, member, pid}) => {
 	
 	const rstage = game.roundStage;
 
-	if ( ! game.waitMsg) game.waitMsg = randomPick(WAIT_MSGS);
+	if ( ! game.waitMsg) {
+		// TODO why is this sometimes flickering? Is it not getting sent to the server & shared properly?
+		game.waitMsg = randomPick(WAIT_MSGS);
+	}
 	return (<>
 		<h3>Congratulations! You have just been made Chief Marketing Officer for</h3>
 		<Card body color='dark'><h3 className='text-light'>ACME {game.product}</h3></Card>

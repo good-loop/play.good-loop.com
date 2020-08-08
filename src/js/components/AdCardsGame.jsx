@@ -14,7 +14,7 @@ import JSend from '../base/data/JSend';
 
 class AdCardsGame extends DataClass {	
 
-	/** @type {string} brief|create|pitch|pick|trivia|done */
+	/** @type {string} brief|create|pitch|pick|trivia|answer|done */
 	roundStage;
 
 	/** @type {string[]} */
