@@ -216,5 +216,5 @@ const joinRoom = (roomId) => {
 
 export default LobbyPage;
 export {
-	isInLobby, Peeps, Chatter
+	isInLobby, Peeps, Chatter, peepName
 };

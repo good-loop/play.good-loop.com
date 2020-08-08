@@ -3,7 +3,7 @@
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
 import _ from 'lodash';
-import SJTest, {assert} from 'sjtest';
+import SJTest, { assert } from 'sjtest';
 import Login from 'you-again';
 import DataStore, { getValue, setValue } from '../base/plumbing/DataStore';
 import C from '../C';
@@ -12,9 +12,9 @@ import DataClass, { nonce } from '../base/data/DataClass';
 import { randomPick } from '../base/utils/miscutils';
 import JSend from '../base/data/JSend';
 
-class AdCardsGame extends DataClass {	
+class AdCardsGame extends DataClass {
 
-	/** @type {string} brief|create|pitch|pick|trivia|answer|done */
+	/** @type {string} brief|create|pitch|pick|winner|trivia|done */
 	roundStage;
 
 	/** @type {string[]} */
@@ -32,7 +32,7 @@ class AdCardsGame extends DataClass {
 	constructor(base) {
 		super(base);
 		Object.assign(this, base);
-		delete this.status;	
+		delete this.status;
 	}
 
 }
@@ -48,20 +48,20 @@ AdCardsGame.setRoundStage = (game, newStage) => {
  * @param {Array} a items An array containing the items.
  */
 function shuffle(a) {
-    let j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+	let j, x, i;
+	for (i = a.length - 1; i > 0; i--) {
+		j = Math.floor(Math.random() * (i + 1));
+		x = a[i];
+		a[i] = a[j];
+		a[j] = x;
+	}
+	return a;
 }
 
 let HAND_SIZE = 6;
 
 // TODO fetch card data
-DataStore.fetch(['misc','ads.tsv'], () => {
+DataStore.fetch(['misc', 'ads.tsv'], () => {
 	const ptsv = fetch("/data/Ads-Without-Humanity.tsv");
 	return ptsv
 		.then(res0 => res0.text()) // TODO support in JSend
@@ -86,22 +86,22 @@ DataStore.fetch(['misc','ads.tsv'], () => {
 
 AdCardsGame.setup = game => {
 	// options
-	game.options= {showCards:true};
+	game.options = { showCards: true };
 	game.slogans = AdCardsGame.ALL_SLOGANS.slice(); // safety copy
 	game.products = AdCardsGame.ALL_PRODUCTS.slice();
 	// blank player state	
 	const n = game.playerIds.length;
 	game.playerState = {};
 	game.playerIds.forEach(playerId => {
-		game.playerState[playerId] = {hand:[]};
+		game.playerState[playerId] = { hand: [] };
 	});
 	// deal slogan cards
 	shuffle(game.slogans);
-	shuffle(game.products);	
+	shuffle(game.products);
 	game.sloganIndex = 0;
 	game.productIndex = 0;
-	for (let i=0; i<HAND_SIZE; i++) {
-		for(let j=0; j<n; j++) {
+	for (let i = 0; i < HAND_SIZE; i++) {
+		for (let j = 0; j < n; j++) {
 			dealCardTo(game, game.playerIds[j]);
 		}
 	}
@@ -109,6 +109,12 @@ AdCardsGame.setup = game => {
 	// whos the first client?
 	game.client = randomPick(game.playerIds);
 	AdCardsGame.newRound(game);
+};
+
+AdCardsGame.addScore = (game, pid, dscore) => {
+	const pstate = game.playerState[playerId];
+	pstate.score = (pstate.score || 0) + dscore;
+	return pstate.score;
 };
 
 AdCardsGame.brandForSlogan = slogan => {
@@ -126,6 +132,7 @@ AdCardsGame.newRound = (game) => {
 	game.waitMsg = false;
 	game.roundStage = 'brief';
 	game.winningCard = false;
+	game.winner = null;
 	// client
 	let cid = game.playerIds.indexOf(game.client);
 	cid++;
@@ -155,7 +162,7 @@ AdCardsGame.pickedCards = (game) => {
 };
 
 AdCardsGame.getHand = (game, pid) => {
-	if ( ! game.playerState || ! game.playerState[pid]) {
+	if (!game.playerState || !game.playerState[pid]) {
 		console.warn("Game not setup?! playerState missing", JSON.stringify(game));
 		return [];
 	}

@@ -54,6 +54,7 @@ const AdCardsPage = () => {
 				{isClient? <ClientView game={game} member={member} pid={pid} /> : null}
 				{ ! isClient? <AdvertiserView game={game} member={member} pid={pid} /> : null}
 				
+				<WinnerStage game={game} pid={pid} isClient={isClient} />
 				<TriviaStage game={game} pid={pid} isClient={isClient} />
 				<DoneStage game={game} pid={pid} isClient={isClient} />
 
@@ -107,6 +108,22 @@ const ClientView = ({game, member, pid}) => {
 
 	</>);
 };
+
+
+const WinnerStage = ({game, pid, isClient}) => {
+	if (game.roundStage !== 'winner') return null;
+
+	return (
+		<div>
+			<h4>The winning slogan is: </h4>
+			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
+			<Card body color='success' ><h3>{game.winningCard}</h3></Card>
+			<h4>By {peepName(game.winner)}</h4>
+			Score {AdCardsGame.addScore(game, pid, 100)}
+			<Button onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button>
+		</div>);
+};
+
 
 const TriviaStage = ({game, pid, isClient}) => {
 	if (game.roundStage !== 'trivia') return null;
@@ -207,6 +224,10 @@ const ClientChoiceHand = ({hand, member, game, pid}) => {
 	const pickCard = card => {
 		game.winningCard = card;		
 		member.answer = true;
+		// Who said it?
+		let winner = Object.keys(game.playerState).find(wpid => game.playerState[wpid].picked === game.winningCard);
+		console.warn("Who won?", card, winner, game);
+		game.winner = winner;
 		AdCardsGame.setRoundStage(game, 'trivia');
 	};
 	return (<Row>
