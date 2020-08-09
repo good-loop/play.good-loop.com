@@ -2,7 +2,7 @@
  * A convenient place for ad-hoc widget tests.
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import SJTest, {assert} from 'sjtest';
@@ -18,7 +18,7 @@ import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
 import { stopEvent, copyTextToClipboard, randomPick, space } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
 import BG from './BG';
-import LobbyPage, { isInLobby, Peeps, Chatter } from './LobbyPage';
+import LobbyPage, { isInLobby, Peeps, Chatter, peepName } from './LobbyPage';
 import AdCardsGame from './AdCardsGame';
 
 // Game states: Name -> Create / Join -> Start -> Enter -> Deliver stories
@@ -49,14 +49,16 @@ const AdCardsPage = () => {
 		<Row>
 			<Col>
 				<h3>Ads Without Humanity</h3>				
-				<h4>Client rep: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h4>
+				<h4>The client rep is: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h4>
 
-				{isClient? <ClientView game={game} member={member} pid={pid} /> : null}
-				{ ! isClient? <AdvertiserView game={game} member={member} pid={pid} /> : null}
+				{rStage==='winner' || rStage==='done' || game.roundStage==='trivia'? null :
+					(isClient? <ClientView game={game} member={member} pid={pid} /> 
+						: <AdvertiserView game={game} member={member} pid={pid} />)
+				}
 				
-				<WinnerStage game={game} pid={pid} isClient={isClient} />
+				<WinnerStage room={room} game={game} pid={pid} isClient={isClient} />
 				<TriviaStage game={game} pid={pid} isClient={isClient} />
-				<DoneStage game={game} pid={pid} isClient={isClient} />
+				<DoneStage room={room} game={game} pid={pid} isClient={isClient} />
 
 			</Col>
 			<Col>
@@ -72,20 +74,21 @@ const WAIT_MSGS = [
 	"Listen! That gurgling is the sound of creative juices flowing. Definitely not gin on a phone call.",
 	"With passion and energy, the creatives set to work...",
 ];
+const WAIT_MSGS_CLIENT = [
+	"Waiting for the client... Or give them a call? Is 5 reminders a day too much?",
+	"The client is contemplating their strategy. Possibly on the golf course.",
+];
+
 
 const ClientView = ({game, member, pid}) => {	
 	const pickedCards = AdCardsGame.pickedCards(game);
 	const allPicked = pickedCards.length >= game.playerIds.length - 1;
-	if (game.roundStage==='create' && allPicked) AdCardsGame.setRoundStage(game, 'pitch');
+	if (game.roundStage==='create' && allPicked) AdCardsGame.setRoundStage(game, 'pitch');	
 	
 	const rstage = game.roundStage;
 
-	if ( ! game.waitMsg) {
-		// TODO why is this sometimes flickering? Is it not getting sent to the server & shared properly?
-		game.waitMsg = randomPick(WAIT_MSGS);
-	}
 	return (<>
-		<h3>Congratulations! You have just been made Chief Marketing Officer for</h3>
+		<h3 className={rstage!=='brief'? 'd-none' : null}>Congratulations! You have just been made Chief Marketing Officer for</h3>
 		<Card body color='dark'><h3 className='text-light'>ACME {game.product}</h3></Card>
 		
 		<h4 className={rstage!=='brief'? 'd-none' : null}>
@@ -93,7 +96,7 @@ const ClientView = ({game, member, pid}) => {
 			<Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'create')}>Let Them Get Creative</Button>
 		</h4>
 
-		<h5 className={rstage!=='create'? 'd-none' : null}>{game.waitMsg}</h5>
+		<h5 className={rstage!=='create'? 'd-none' : null}><WaitMsg advertisers /></h5>
 
 		<h4 className={rstage!=='pitch'? 'd-none' : null}>
 			Pitches! 
@@ -110,20 +113,24 @@ const ClientView = ({game, member, pid}) => {
 };
 
 
-const WinnerStage = ({game, pid, isClient}) => {
+const WinnerStage = ({room, game, pid, isClient}) => {
 	if (game.roundStage !== 'winner') return null;
-
+	
 	return (
 		<div>
 			<h4>The winning slogan is: </h4>
 			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
 			<Card body color='success' ><h3>{game.winningCard}</h3></Card>
-			<h4>By {peepName(game.winner)}</h4>
-			Score {AdCardsGame.addScore(game, pid, 100)}
-			<Button onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button>
+			<h4>By {peepName(room, game.winner)}</h4>
+			Score {AdCardsGame.getScore(game, pid)}
+			{isClient? <Button onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button> : <WaitMsg client />}
 		</div>);
 };
 
+const WaitMsg = ({client}) => {
+	let [waitMsg] = useState(randomPick(client? WAIT_MSGS_CLIENT : WAIT_MSGS));
+	return waitMsg;
+}
 
 const TriviaStage = ({game, pid, isClient}) => {
 	if (game.roundStage !== 'trivia') return null;
@@ -133,14 +140,20 @@ const TriviaStage = ({game, pid, isClient}) => {
 	let guesses = game.playerIds.map(p => game.playerState[p].triviaGuess).filter(g => g);
 	const allGuessed = guesses.length >= game.playerIds.length;
 	if (allGuessed && isClient) {
+		// who got it right?
+		const answer = AdCardsGame.brandForSlogan(game.winningCard);
+		game.playerIds.map(p => {
+			if (triviaMatch(game.playerState[p].triviaGuess, answer)) {
+				AdCardsGame.addScore(game, p, 50);	
+			}
+		});
+		// move on
 		AdCardsGame.setRoundStage(game, 'done');
 	}
 
 	return (
 		<div>
-			<h4>The winning slogan is: </h4>
-			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
-			<Card body color='success' ><h3>{game.winningCard}</h3></Card>
+			<h4>The winning slogan is: {game.winningCard}</h4>
 			
 			<h4>Trivia Bonus: Whose slogan was it really?</h4>			
 			<PropControl path={tpath} prop='brand' />
@@ -148,23 +161,48 @@ const TriviaStage = ({game, pid, isClient}) => {
 		</div>);
 };
 
-const DoneStage = ({game,pid,isClient}) => {
+/**
+ * @param {string} guess 
+ * @param {string} answer 
+ */
+const triviaMatch = (guess, answer) => {
+	if ( ! guess || ! answer) return;
+	let g = guess.trim().toLowerCase();
+	if ( ! guess) return;
+	if (answer.trim().toLowerCase() == guess) {
+		return true;
+	}
+	// TODO coke = coca-cola, maxwell = maxwell house, and other corner cases
+	return false;
+};
+
+
+const DoneStage = ({room, game,pid,isClient}) => {
 	if (game.roundStage !== 'done') return null;
 	return (<div>
 		<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
 		<Card body color='success' ><h3>{game.winningCard}</h3></Card>
 
-		The slogan belongs to {AdCardsGame.brandForSlogan(game.winningCard)}. It is used here without endorsement.
+		The slogan belongs to {AdCardsGame.brandForSlogan(game.winningCard)}. 
 		
-		<p>TODO show points</p>
+		<div>
+			<h4>The Scores after Round {game.round}</h4>
+			<table>
+				<tbody>
+					{game.playerIds.map(p => 
+						<tr key={p}><td>{peepName(room, p)}</td><td>{game.playerState[p].score}</td></tr>
+					)}
+				</tbody>
+			</table>
+		</div>
 
 		{isClient? <Button color='success' onClick={e => AdCardsGame.newRound(game)}>New Round</Button> : null}
 	</div>);
 };
 
-const AdvertiserView = ({game,member,pid}) => {
-	const rstage = game.roundStage;
-	let picked = game.playerState && game.playerState[pid] && game.playerState[pid].picked;
+const AdvertiserView = ({game,member,pid}) => {	
+	const rstage = game.roundStage;	
+	let picked = game.playerState && game.playerState[pid] && game.playerState[pid].picked;		
 
 	return (<>
 		<h4 className={rstage!=='brief'? 'd-none' : null}>
@@ -189,6 +227,7 @@ const AdvertiserView = ({game,member,pid}) => {
 			<Card body color='success' >
 				<h3 className='text-muted'>{picked}</h3>
 			</Card>			
+			<WaitMsg client />
 		</div>
 		
 	</>);
@@ -228,7 +267,8 @@ const ClientChoiceHand = ({hand, member, game, pid}) => {
 		let winner = Object.keys(game.playerState).find(wpid => game.playerState[wpid].picked === game.winningCard);
 		console.warn("Who won?", card, winner, game);
 		game.winner = winner;
-		AdCardsGame.setRoundStage(game, 'trivia');
+		AdCardsGame.addScore(game, winner, 100);
+		AdCardsGame.setRoundStage(game, 'winner');
 	};
 	return (<Row>
 		{hand.map((card, i) => 

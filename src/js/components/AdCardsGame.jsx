@@ -111,10 +111,21 @@ AdCardsGame.setup = game => {
 	AdCardsGame.newRound(game);
 };
 
+/**
+ * 
+ * @param {AdCardsGame} game 
+ * @param {string} pid 
+ * @param {number} dscore increase the score by this
+ * @returns {number} new score
+ */
 AdCardsGame.addScore = (game, pid, dscore) => {
-	const pstate = game.playerState[playerId];
+	const pstate = game.playerState[pid];
 	pstate.score = (pstate.score || 0) + dscore;
 	return pstate.score;
+};
+AdCardsGame.getScore = (game, pid) => {
+	const pstate = game.playerState[pid];
+	return pstate.score || 0;
 };
 
 AdCardsGame.brandForSlogan = slogan => {
@@ -133,6 +144,7 @@ AdCardsGame.newRound = (game) => {
 	game.roundStage = 'brief';
 	game.winningCard = false;
 	game.winner = null;
+	game.round = (game.round || 0) + 1;
 	// client
 	let cid = game.playerIds.indexOf(game.client);
 	cid++;
