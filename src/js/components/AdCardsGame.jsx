@@ -39,6 +39,7 @@ class AdCardsGame extends DataClass {
 DataClass.register(AdCardsGame, "AdCardsGame");
 
 AdCardsGame.setRoundStage = (game, newStage) => {
+	console.log("set roundStage "+newStage);
 	game.roundStage = newStage;
 	// TODO reset answer flags
 };
@@ -141,7 +142,7 @@ const dealCardTo = (game, pid) => {
 
 AdCardsGame.newRound = (game) => {
 	game.waitMsg = false;
-	game.roundStage = 'brief';
+	AdCardsGame.setRoundStage(game, 'brief');
 	game.winningCard = false;
 	game.winner = null;
 	game.round = (game.round || 0) + 1;

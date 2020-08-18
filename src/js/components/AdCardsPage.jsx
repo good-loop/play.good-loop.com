@@ -20,6 +20,7 @@ import Messaging from '../base/plumbing/Messaging';
 import BG from './BG';
 import LobbyPage, { isInLobby, Peeps, Chatter, peepName } from './LobbyPage';
 import AdCardsGame from './AdCardsGame';
+import CSS from '../base/components/CSS';
 
 // Game states: Name -> Create / Join -> Start -> Enter -> Deliver stories
 
@@ -42,24 +43,27 @@ const AdCardsPage = () => {
 	// my id
 	let pid = getPeerId();
 	let game = room.game;
+	const rStage = game.roundStage;
 	let clientMember = Room.member(room, game.client);
 	const isClient = pid === game.client;
 	const member = Room.member(room, pid);	
 	return (<Container fluid>
+		<CSS css="body {background: #666;}" />
 		<Row>
 			<Col>
 				<h3>Ads Without Humanity</h3>				
-				<h4>The client rep is: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h4>
+				<Card body color='dark'><h3>Client Rep: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h3></Card>
 
-				{rStage==='winner' || rStage==='done' || game.roundStage==='trivia'? null :
-					(isClient? <ClientView game={game} member={member} pid={pid} /> 
-						: <AdvertiserView game={game} member={member} pid={pid} />)
-				}
-				
-				<WinnerStage room={room} game={game} pid={pid} isClient={isClient} />
-				<TriviaStage game={game} pid={pid} isClient={isClient} />
-				<DoneStage room={room} game={game} pid={pid} isClient={isClient} />
-
+				<Card body className='board'>
+					{rStage==='winner' || rStage==='done' || game.roundStage==='trivia'? null :
+						(isClient? <ClientView game={game} member={member} pid={pid} /> 
+							: <AdvertiserView game={game} member={member} pid={pid} />)
+					}
+					
+					<WinnerStage room={room} game={game} pid={pid} isClient={isClient} />
+					<TriviaStage game={game} pid={pid} isClient={isClient} />
+					<DoneStage room={room} game={game} pid={pid} isClient={isClient} />
+				</Card>
 			</Col>
 			<Col>
 				<Peeps room={room} />
@@ -88,43 +92,43 @@ const ClientView = ({game, member, pid}) => {
 	const rstage = game.roundStage;
 
 	return (<>
-		<h3 className={rstage!=='brief'? 'd-none' : null}>Congratulations! You have just been made Chief Marketing Officer for</h3>
-		<Card body color='dark'><h3 className='text-light'>ACME {game.product}</h3></Card>
+		{rstage==='brief'? <p>Congratulations! You have just been made Chief Marketing Officer for</p> : null}
 		
-		<h4 className={rstage!=='brief'? 'd-none' : null}>
-			Tell the Advertisers what the product is. Then click this button 
-			<Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'create')}>Let Them Get Creative</Button>
-		</h4>
+		<Card body color='light'><h3>ACME {game.product}</h3></Card>
+		
+		{rstage==='brief'? <>
+			<p>Tell the Advertisers what the product is. Then click the button below.</p>
+			<center className={rstage!=='brief'? 'd-none' : null}>
+				<Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'create')}>Let Them Get Creative</Button>
+			</center>
+		</> : null}
 
-		<h5 className={rstage!=='create'? 'd-none' : null}><WaitMsg advertisers /></h5>
+		{rstage==='create'? <p>Waiting for the Advertisers... <WaitMsg advertisers /></p> : null}
 
-		<h4 className={rstage!=='pitch'? 'd-none' : null}>
-			Pitches! 
-			Ask the Advertisers for their slogan pitches. Then click this button when you are ready to
-			<Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'pick')}>Choose the Winner</Button>
-		</h4>
+		{rstage==='pitch'? <>
+			<p>The pitches are in! Read aloud the slogan pitches:</p>				
+			{pickedCards.map(pc => <Card body color='dark' className='mb-1'>ACME {game.product} - {pc}</Card>)}
+			<center><Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'pick')}>Choose the Winner...</Button></center>
+		</> : null}
 
-		<div className={rstage!=='pick'? 'd-none' : null}>
-			<h4>Pick a winning slogan</h4>
+		{rstage==='pick'? <>		
+			<p>Pick a winning slogan</p>
 			<ClientChoiceHand game={game} member={member} pid={pid} hand={pickedCards} />
-		</div>
+		</> : null}
 
 	</>);
 };
 
 
 const WinnerStage = ({room, game, pid, isClient}) => {
-	if (game.roundStage !== 'winner') return null;
-	
-	return (
-		<div>
-			<h4>The winning slogan is: </h4>
-			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
-			<Card body color='success' ><h3>{game.winningCard}</h3></Card>
-			<h4>By {peepName(room, game.winner)}</h4>
-			Score {AdCardsGame.getScore(game, pid)}
-			{isClient? <Button onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button> : <WaitMsg client />}
-		</div>);
+	if (game.roundStage !== 'winner') return null;	
+	return (<>
+		<h4>The winning slogan is: </h4>
+		<Card body color='dark'><h3>ACME {game.product}</h3></Card>
+		<Card body><h3>{game.winningCard}</h3></Card>
+		<h4 className='mt-1'>By {peepName(room, game.winner)}</h4>		
+		<center>{isClient? <Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button> : <WaitMsg client />}</center>
+	</>);
 };
 
 const WaitMsg = ({client}) => {
@@ -136,7 +140,7 @@ const TriviaStage = ({game, pid, isClient}) => {
 	if (game.roundStage !== 'trivia') return null;
 	const tpath = ['misc','trivia',game.winningCard];
 	const triviaGuess = DataStore.getValue(tpath.concat('brand'));
-
+	const isGuessMade = !! game.playerState[pid].triviaGuess;
 	let guesses = game.playerIds.map(p => game.playerState[p].triviaGuess).filter(g => g);
 	const allGuessed = guesses.length >= game.playerIds.length;
 	if (allGuessed && isClient) {
@@ -151,14 +155,18 @@ const TriviaStage = ({game, pid, isClient}) => {
 		AdCardsGame.setRoundStage(game, 'done');
 	}
 
-	return (
-		<div>
+	return (<>
 			<h4>The winning slogan is: {game.winningCard}</h4>
 			
 			<h4>Trivia Bonus: Whose slogan was it really?</h4>			
-			<PropControl path={tpath} prop='brand' />
-			<Button onClick={e => game.playerState[pid].triviaGuess = triviaGuess||'pass'}>{triviaGuess? 'Enter':'Pass'}</Button>
-		</div>);
+			<form className='flex-row'>
+				<PropControl path={tpath} prop='brand' className='flex-grow mr-2' readOnly={isGuessMade} />
+				<Button color='primary' className='pl-3 pr-3' 
+					onClick={e => game.playerState[pid].triviaGuess = triviaGuess||'pass'}
+					disabled={isGuessMade}
+				>{triviaGuess? 'Enter':'Pass'}</Button>
+			</form>
+		</>);
 };
 
 /**
@@ -180,14 +188,13 @@ const triviaMatch = (guess, answer) => {
 const DoneStage = ({room, game,pid,isClient}) => {
 	if (game.roundStage !== 'done') return null;
 	return (<div>
-		<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
-		<Card body color='success' ><h3>{game.winningCard}</h3></Card>
+		<Card body>ACME {game.product} - {game.winningCard}</Card>
 
-		The slogan belongs to {AdCardsGame.brandForSlogan(game.winningCard)}. 
+		<p>The slogan really belongs to {AdCardsGame.brandForSlogan(game.winningCard)}.</p>
 		
 		<div>
 			<h4>The Scores after Round {game.round}</h4>
-			<table>
+			<table className='table table-striped'>
 				<tbody>
 					{game.playerIds.map(p => 
 						<tr key={p}><td>{peepName(room, p)}</td><td>{game.playerState[p].score}</td></tr>
@@ -196,7 +203,7 @@ const DoneStage = ({room, game,pid,isClient}) => {
 			</table>
 		</div>
 
-		{isClient? <Button color='success' onClick={e => AdCardsGame.newRound(game)}>New Round</Button> : null}
+		{isClient? <center><Button color='success' onClick={e => AdCardsGame.newRound(game)}>New Round</Button></center> : null}
 	</div>);
 };
 
@@ -205,30 +212,29 @@ const AdvertiserView = ({game,member,pid}) => {
 	let picked = game.playerState && game.playerState[pid] && game.playerState[pid].picked;		
 
 	return (<>
-		<h4 className={rstage!=='brief'? 'd-none' : null}>
-			Ask the Client about the product			
-		</h4>
+		{rstage==='brief'? <p>Ask the Client about the product</p> : null}
 
-		<div className={rstage!=='create'? 'd-none' : null}>
-			<h4>Pick your best slogan for</h4>
-			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
+		{rstage==='create'? <>
+			<p>Pick your best slogan for</p>
+			<Card body color='dark'><h3>ACME {game.product}</h3></Card>
 			<YourHand member={member} game={game} pid={pid} />
-		</div>
+		</> : null}
 
-		<div className={rstage!=='pitch'? 'd-none' : null}>
-			<h4>Pitch It!</h4>
-			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
-			<Card body color='success' ><h3>{picked}</h3></Card>
-		</div>	
+		{rstage==='pitch'? <>
+			<p>Pitches!</p>
+			<p>The Client Rep will read aloud all the slogan ideas.</p>
+			<p>Your's is:</p>			
+			<Card body>ACME {game.product} {picked}</Card>
+		</>	: null}
 
-		<div className={rstage!=='pick'? 'd-none' : null}>
+		{rstage==='pick'? <>
 			<h4>The Client is deciding...</h4>
 			<Card body color='dark'><h3 className='text-light mb-5'>ACME {game.product}</h3></Card>
-			<Card body color='success' >
+			<Card body className='playing-card'>
 				<h3 className='text-muted'>{picked}</h3>
 			</Card>			
 			<WaitMsg client />
-		</div>
+		</> : null}
 		
 	</>);
 };
@@ -242,18 +248,28 @@ const YourHand = ({member, game, pid}) => {
 		game.playerState[pid].picked = card;
 		member.answer = true;
 	};
-	return (<Row>
+	return <Hand hand={hand} onPick={pickCard} picked={picked} />;
+};
+
+const Hand = ({hand, picked, onPick}) => {
+	return (<Grid sm='1' md='3' >
 		{hand.map((card, i) => 
-			<Col key={i} className='pt-5'>
-				<Card body style={{cursor:"pointer"}} 
+			<Cell md={4} sm={6} key={i} className='pt-5 pr-2'>
+				<Card body style={{cursor:"pointer",height:"100%"}} 
 					className={space('playing-card', picked===card && 'card-picked')} 
-					color='success' 
-					onClick={e => pickCard(card)} >
+					onClick={e => onPick(card)} >
 					<h3>{card}</h3>
 				</Card>
-			</Col>
+			</Cell>
 		)}
-	</Row>);
+	</Grid>);
+};
+
+const Grid = ({children, sm, md}) => {
+	return <div className={space('gridbox', sm && 'gridbox-sm-'+sm, md && 'gridbox-md-'+md)}>{children}</div>;
+};
+const Cell = ({className, children}) => {
+	return <div className={className}>{children}</div>
 };
 
 // copy pasta code :(
@@ -270,15 +286,10 @@ const ClientChoiceHand = ({hand, member, game, pid}) => {
 		AdCardsGame.addScore(game, winner, 100);
 		AdCardsGame.setRoundStage(game, 'winner');
 	};
-	return (<Row>
-		{hand.map((card, i) => 
-			<Col key={i}>
-				<Card body style={{cursor:"pointer"}} className={game.winningCard===card? 'mt-n5' : null} color='success' 
-					onClick={e => pickCard(card)} ><h3>{card}</h3>
-				</Card>
-			</Col>
-		)}
-	</Row>);
+	return <Hand hand={hand} picked={game.winningCard} onPick={pickCard} />;
 };
+
+// attrubtion TODO <a href="https://www.freepik.com/vectors/people">People vector created by pch.vector - www.freepik.com</a>
+// <a href='https://www.freepik.com/vectors/business'>Business vector created by studiogstock - www.freepik.com</a>
 
 export default AdCardsPage;

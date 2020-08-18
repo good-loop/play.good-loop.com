@@ -116,7 +116,7 @@ const RoomOpen = ({room}) => {
 	return 	<Card body className='m-2'>
 	<h3><ShareLink room={room}>Room: {room.id}</ShareLink></h3>
 
-	<h2>{Room.isHost(room)? "Host" : "Guest "+getPeerId()}</h2>
+	<h2>{Room.isHost(room)? "Host" : "Guest"}</h2>
 		
 	{Room.isHost(room)? 
 		<Button className='m-2' onClick={e => doStart(room)}>Everybody's In? - Let's Start!</Button> 

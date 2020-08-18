@@ -107,16 +107,13 @@ class MainDiv extends Component {
 			</div>);
 		}
 	
-		return (
-			<div>
-				<div>
-					<MessageBar />
-					<div className='page' id={page}>						
-						<Page path={path} />
-					</div>
+		return (<>				
+				<MessageBar />
+				<div className='page' id={page}>						
+					<Page path={path} />
 				</div>
 				<LoginWidget logo={C.app.service} title={'Welcome to '+C.app.name} services={['twitter', 'facebook']} />
-			</div>
+			</>
 		);
 	} // ./render()
 } // ./MainDiv

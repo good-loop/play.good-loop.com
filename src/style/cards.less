@@ -1,9 +1,35 @@
 
-.playing-card {
+@import "../js/base/style/colours.less";
 
+.card.board {
+	min-height: 30vh;
 }
 
-.card-picked {
-	box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+.card p, .card btn {
+	font-size: 1.45rem; // NB h3 is 1.75rem
+}
+.card h3 {
+	text-align: center;
+	margin: auto;
+}
+
+#mainDiv .card.bg-dark {
+	background-color: @gl-red !important;
+	color: white;	
+}
+
+.btn-primary {
+	margin: auto;
+}
+
+.playing-card {
+	color: @gl-red !important;
+	border: 1px solid @gl-red;
+	background-color: white !important;
+	transition: all 1s;
+}
+
+.card-picked {	
+	box-shadow: 0 0 0 0.2rem #770f00; // rgba(0,123,255,.25);
 	margin-top: -2rem!important; // NB: a bit less than BS m-5, or mt-n5 as it'd be here
 }
