@@ -107,7 +107,7 @@ const ClientView = ({game, member, pid}) => {
 
 		{rstage==='pitch'? <>
 			<p>The pitches are in! Read aloud the slogan pitches:</p>				
-			{pickedCards.map(pc => <Card body color='dark' className='mb-1'>ACME {game.product} - {pc}</Card>)}
+			{pickedCards.map(pc => <Card key={pc} body className='mb-1'><p>ACME {game.product} - {pc}</p></Card>)}
 			<center><Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'pick')}>Choose the Winner...</Button></center>
 		</> : null}
 
@@ -122,12 +122,20 @@ const ClientView = ({game, member, pid}) => {
 
 const WinnerStage = ({room, game, pid, isClient}) => {
 	if (game.roundStage !== 'winner') return null;	
+	if ( ! game.winner) {
+		console.error("No winner?!",game);
+	}
 	return (<>
 		<h4>The winning slogan is: </h4>
 		<Card body color='dark'><h3>ACME {game.product}</h3></Card>
 		<Card body><h3>{game.winningCard}</h3></Card>
-		<h4 className='mt-1'>By {peepName(room, game.winner)}</h4>		
-		<center>{isClient? <Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button> : <WaitMsg client />}</center>
+		
+		<h4 className='mt-1'>
+			By {peepName(room, game.winner)}
+			{game.winner === pid? <> - <span className='text-success'>That's You!</span></> : null}
+		</h4>
+
+		<center>{isClient? <Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'trivia')}>Next</Button> : "Waiting for the client..."}</center>
 	</>);
 };
 
@@ -139,10 +147,11 @@ const WaitMsg = ({client}) => {
 const TriviaStage = ({game, pid, isClient}) => {
 	if (game.roundStage !== 'trivia') return null;
 	const tpath = ['misc','trivia',game.winningCard];
-	const triviaGuess = DataStore.getValue(tpath.concat('brand'));
+	const triviaGuess = DataStore.getValue(tpath.concat('brand')) || game.playerState[pid].triviaGuess;
 	const isGuessMade = !! game.playerState[pid].triviaGuess;
 	let guesses = game.playerIds.map(p => game.playerState[p].triviaGuess).filter(g => g);
 	const allGuessed = guesses.length >= game.playerIds.length;
+	console.log(allGuessed, guesses, isGuessMade, triviaGuess);
 	if (allGuessed && isClient) {
 		// who got it right?
 		const answer = AdCardsGame.brandForSlogan(game.winningCard);
@@ -164,7 +173,7 @@ const TriviaStage = ({game, pid, isClient}) => {
 				<Button color='primary' className='pl-3 pr-3' 
 					onClick={e => game.playerState[pid].triviaGuess = triviaGuess||'pass'}
 					disabled={isGuessMade}
-				>{triviaGuess? 'Enter':'Pass'}</Button>
+				>{triviaGuess && triviaGuess!=='pass'? 'Enter':'Pass'}</Button>
 			</form>
 		</>);
 };
@@ -187,8 +196,8 @@ const triviaMatch = (guess, answer) => {
 
 const DoneStage = ({room, game,pid,isClient}) => {
 	if (game.roundStage !== 'done') return null;
-	return (<div>
-		<Card body>ACME {game.product} - {game.winningCard}</Card>
+	return (<>
+		<Card body><p>ACME {game.product} - {game.winningCard}</p></Card>
 
 		<p>The slogan really belongs to {AdCardsGame.brandForSlogan(game.winningCard)}.</p>
 		
@@ -196,15 +205,17 @@ const DoneStage = ({room, game,pid,isClient}) => {
 			<h4>The Scores after Round {game.round}</h4>
 			<table className='table table-striped'>
 				<tbody>
+					<tr><td>Player</td><td>Score</td></tr>
 					{game.playerIds.map(p => 
-						<tr key={p}><td>{peepName(room, p)}</td><td>{game.playerState[p].score}</td></tr>
+						<tr key={p}><td>{peepName(room, p)}</td>
+						<td>{AdCardsGame.getScore(game, p)}</td></tr>
 					)}
 				</tbody>
 			</table>
 		</div>
 
 		{isClient? <center><Button color='success' onClick={e => AdCardsGame.newRound(game)}>New Round</Button></center> : null}
-	</div>);
+	</>);
 };
 
 const AdvertiserView = ({game,member,pid}) => {	
@@ -212,7 +223,11 @@ const AdvertiserView = ({game,member,pid}) => {
 	let picked = game.playerState && game.playerState[pid] && game.playerState[pid].picked;		
 
 	return (<>
-		{rstage==='brief'? <p>Ask the Client about the product</p> : null}
+		{rstage==='brief'? <>
+			<p>Ask the Client about the product!</p>
+			<p>Your slogan cards are:</p>
+			<Hand hand={AdCardsGame.getHand(game, pid)} />
+			</> : null}
 
 		{rstage==='create'? <>
 			<p>Pick your best slogan for</p>
@@ -224,7 +239,7 @@ const AdvertiserView = ({game,member,pid}) => {
 			<p>Pitches!</p>
 			<p>The Client Rep will read aloud all the slogan ideas.</p>
 			<p>Your's is:</p>			
-			<Card body>ACME {game.product} {picked}</Card>
+			<Card body>ACME {game.product} - {picked}</Card>
 		</>	: null}
 
 		{rstage==='pick'? <>
@@ -245,6 +260,7 @@ const YourHand = ({member, game, pid}) => {
 	let picked = game.playerState[pid] && game.playerState[pid].picked;
 	if ( ! picked) member.answer = false;
 	const pickCard = card => {
+		console.log("pickCard",card);
 		game.playerState[pid].picked = card;
 		member.answer = true;
 	};
@@ -255,9 +271,9 @@ const Hand = ({hand, picked, onPick}) => {
 	return (<Grid sm='1' md='3' >
 		{hand.map((card, i) => 
 			<Cell md={4} sm={6} key={i} className='pt-5 pr-2'>
-				<Card body style={{cursor:"pointer",height:"100%"}} 
+				<Card body style={{cursor:onPick?"pointer":null, height:"100%"}} 
 					className={space('playing-card', picked===card && 'card-picked')} 
-					onClick={e => onPick(card)} >
+					onClick={e => onPick && onPick(card)} >
 					<h3>{card}</h3>
 				</Card>
 			</Cell>
@@ -281,7 +297,7 @@ const ClientChoiceHand = ({hand, member, game, pid}) => {
 		member.answer = true;
 		// Who said it?
 		let winner = Object.keys(game.playerState).find(wpid => game.playerState[wpid].picked === game.winningCard);
-		console.warn("Who won?", card, winner, game);
+		if ( ! winner) console.error("No winner?!", card, game);
 		game.winner = winner;
 		AdCardsGame.addScore(game, winner, 100);
 		AdCardsGame.setRoundStage(game, 'winner');

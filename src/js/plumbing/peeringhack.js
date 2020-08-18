@@ -131,6 +131,8 @@ Room.sendRoomUpdate = room => {
 	};
 	if (oldRoom) {
 		let diff = jsonpatch.compare(oldRoom, room);
+		// remove add-null, as the server ignores it
+		diff = diff.filter(op => ! (op.op==="add" && op.value===null));
 		if (diff.length) console.warn("Room.sendRoomUpdate", diff);
 		data.diff = JSON.stringify(diff);
 	} else {

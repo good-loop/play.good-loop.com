@@ -7,9 +7,8 @@ import SJTest, { assert } from 'sjtest';
 import Login from 'you-again';
 import DataStore, { getValue, setValue } from '../base/plumbing/DataStore';
 import C from '../C';
-
 import DataClass, { nonce } from '../base/data/DataClass';
-import { randomPick } from '../base/utils/miscutils';
+import { randomPick, asNum } from '../base/utils/miscutils';
 import JSend from '../base/data/JSend';
 
 class AdCardsGame extends DataClass {
@@ -42,6 +41,9 @@ AdCardsGame.setRoundStage = (game, newStage) => {
 	console.log("set roundStage "+newStage);
 	game.roundStage = newStage;
 	// TODO reset answer flags
+
+	// update (but not a nested update)
+	_.defer(AdCardsGame.update);
 };
 
 /**
@@ -85,6 +87,13 @@ DataStore.fetch(['misc', 'ads.tsv'], () => {
 		});
 });
 
+/**
+ * Update the local view
+ */
+AdCardsGame.update = () => {
+	DataStore.update();
+};
+
 AdCardsGame.setup = game => {
 	// options
 	game.options = { showCards: true };
@@ -94,7 +103,7 @@ AdCardsGame.setup = game => {
 	const n = game.playerIds.length;
 	game.playerState = {};
 	game.playerIds.forEach(playerId => {
-		game.playerState[playerId] = { hand: [] };
+		game.playerState[playerId] = { hand: [], score: randomPick(["seasonal lull", "just warming up", "um...", "there's some great stuff in the pipeline"]) };
 	});
 	// deal slogan cards
 	shuffle(game.slogans);
@@ -121,11 +130,16 @@ AdCardsGame.setup = game => {
  */
 AdCardsGame.addScore = (game, pid, dscore) => {
 	const pstate = game.playerState[pid];
-	pstate.score = (pstate.score || 0) + dscore;
+	// string = 0	
+	let scr = pstate.score || 0;
+	if (_.isString(scr) && ! asNum(scr)) { // paranoia re numbers getting accidentally converted to strings
+		scr = 0;	
+	}
+	pstate.score = scr + dscore;
 	return pstate.score;
 };
 AdCardsGame.getScore = (game, pid) => {
-	const pstate = game.playerState[pid];
+	const pstate = game.playerState[pid];	
 	return pstate.score || 0;
 };
 
@@ -141,11 +155,13 @@ const dealCardTo = (game, pid) => {
 };
 
 AdCardsGame.newRound = (game) => {
-	game.waitMsg = false;
-	AdCardsGame.setRoundStage(game, 'brief');
-	game.winningCard = false;
-	game.winner = null;
 	game.round = (game.round || 0) + 1;
+	AdCardsGame.setRoundStage(game, 'brief');
+	// false out most state, but not score or hand
+	game.waitMsg = false;	
+	game.winningCard = false;
+	game.winner = false;
+	game.triviaGuess = false;
 	// client
 	let cid = game.playerIds.indexOf(game.client);
 	cid++;
