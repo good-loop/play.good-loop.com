@@ -160,8 +160,8 @@ const Chatter = ({room}) => {
 	return (<Card><CardBody>
 		<CardTitle><h3>Chat</h3></CardTitle>
 		{chats.map((c,i) => <Chat key={i} room={room} chat={c} />)}
-		<Form inline onSubmit={doChat}>
-			<PropControl path={['misc','chat']} prop='text' />
+		<Form onSubmit={doChat} className='flex-row'>
+			<PropControl path={['misc','chat']} prop='text' className='flex-grow mr-2' />
 			<Button onClick={doChat} disabled={ ! DataStore.getValue('misc','chat')} >Send</Button>
 		</Form>		
 	</CardBody></Card>);

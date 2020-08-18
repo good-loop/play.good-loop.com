@@ -48,10 +48,10 @@ const AdCardsPage = () => {
 	const isClient = pid === game.client;
 	const member = Room.member(room, pid);	
 	return (<Container fluid>
-		<CSS css="body {background: #666;}" />
+		<CSS css="body {background: #333;}" />
+		<h3 className='game-title'>Ads Without Humanity</h3>
 		<Row>
-			<Col>
-				<h3>Ads Without Humanity</h3>				
+			<Col>								
 				<Card body color='dark'><h3>Client Rep: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h3></Card>
 
 				<Card body className='board'>
