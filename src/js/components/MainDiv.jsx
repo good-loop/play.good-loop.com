@@ -59,7 +59,7 @@ class MainDiv extends Component {
 			// Link profiles? No - done by the YA server
 			// poke React via DataStore (e.g. for Login.error)
 			DataStore.update({});			
-			// is this needed??
+			// is this needed?
 			this.setState({});
 		});
 
