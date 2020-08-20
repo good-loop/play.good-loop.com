@@ -156,9 +156,13 @@ const TriviaStage = ({game, pid, isClient}) => {
 		// who got it right?
 		const answer = AdCardsGame.brandForSlogan(game.winningCard);
 		game.playerIds.map(p => {
-			if (triviaMatch(game.playerState[p].triviaGuess, answer)) {
-				AdCardsGame.addScore(game, p, 50);	
-			}
+			let pguess = game.playerState[p].triviaGuess;
+			if (triviaMatch(pguess, answer)) {
+				const pscore = AdCardsGame.addScore(game, p, 50);	
+				console.log("Yay 50 trivia points for "+p+": "+pguess+" score: "+pscore);
+			} else {
+				console.log("No trivia points for "+p+": "+pguess);
+			}			
 		});
 		// move on
 		AdCardsGame.setRoundStage(game, 'done');

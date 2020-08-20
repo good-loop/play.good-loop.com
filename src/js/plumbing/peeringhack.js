@@ -142,7 +142,7 @@ Room.sendRoomUpdate = room => {
 	let pLoad = ServerIO.load(ServerIO.CHANNEL_ENDPOINT+"/"+room.id, {data, method:"POST"});
 	pLoad.then(res => {
 		let rd = JSend.data(res);
-		let myState = deepCopy(Room.myState(room));
+		// let myState = deepCopy(Room.myState(room));
 		// very recent local diffs		
 		let recentLocalDiffs = jsonpatch.compare(roomBefore, room);
 		// update
@@ -163,8 +163,8 @@ Room.sendRoomUpdate = room => {
 		oldRoom = rd.room || deepCopy(room);
 
 		// preserve your state against race conditions
-		room.state[getPeerId()] = myState;
-		// preserve very recent local edits (which we still need to tell the server about)
+		// room.state[getPeerId()] = myState; // but what about + to your score?
+		// Preserve very recent local edits (which we still need to tell the server about)
 		if (recentLocalDiffs.length) {
 			console.warn("Race condition! Preserving recent local edits", recentLocalDiffs);
 			jsonpatch.applyPatch(room, recentLocalDiffs);

@@ -174,6 +174,7 @@ AdCardsGame.newRound = (game) => {
 		const pstate = game.playerState[pid];
 		pstate.hand = pstate.hand.filter(c => c !== pstate.picked);
 		pstate.picked = false;
+		pstate.triviaGuess = false;
 	});
 	// deal new cards
 	game.playerIds.forEach(pid => {
