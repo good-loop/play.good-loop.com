@@ -138,12 +138,12 @@ Room.sendRoomUpdate = room => {
 	} else {
 		data.room = JSON.stringify(room);		
 	}
+	const roomBefore = deepCopy(room);
 	let pLoad = ServerIO.load(ServerIO.CHANNEL_ENDPOINT+"/"+room.id, {data, method:"POST"});
 	pLoad.then(res => {
 		let rd = JSend.data(res);
 		let myState = deepCopy(Room.myState(room));
-		// very recent local diffs
-		let roomBefore = JSON.parse(data.room);
+		// very recent local diffs		
 		let recentLocalDiffs = jsonpatch.compare(roomBefore, room);
 		// update
 		// HACK: process a flush commmand		
