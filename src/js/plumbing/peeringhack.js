@@ -142,6 +142,9 @@ Room.sendRoomUpdate = room => {
 	pLoad.then(res => {
 		let rd = JSend.data(res);
 		let myState = deepCopy(Room.myState(room));
+		// very recent local diffs
+		let roomBefore = JSON.parse(data.room);
+		let recentLocalDiffs = jsonpatch.compare(roomBefore, room);
 		// update
 		// HACK: process a flush commmand		
 		if (roomUpdate_processCommand(room, rd)) {
@@ -153,15 +156,26 @@ Room.sendRoomUpdate = room => {
 		} else if (rd.room) {			
 			_.merge(room, rd.room);			
 		}
-		// preserve your state against race conditions
-		room.state[getPeerId()] = myState;
 
 		// for next time
 		// NB: prefer the servers view, if sent, as that will catch any client<>server mismatch next time round
+		// NB: don't include stuff we know the server doesn't know about
 		oldRoom = rd.room || deepCopy(room);
+
+		// preserve your state against race conditions
+		room.state[getPeerId()] = myState;
+		// preserve very recent local edits (which we still need to tell the server about)
+		if (recentLocalDiffs.length) {
+			console.warn("Race condition! Preserving recent local edits", recentLocalDiffs);
+			jsonpatch.applyPatch(room, recentLocalDiffs);
+		}
 	});	
 };
+/**
+ * A copy of the room which should match the last state from the server
+ */
 let oldRoom = null;
+
 // nope
 // Room.sendRoomUpdate = _.debounce(Room._sendRoomUpdate, 200);
 
