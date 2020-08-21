@@ -171,7 +171,12 @@ AdCardsGame.newRound = (game) => {
 	game.productIndex++;
 	// remove played cards and clear picks
 	game.playerIds.forEach(pid => {
-		const pstate = game.playerState[pid];
+		let pstate = game.playerState[pid];
+		if ( ! pstate) { // paranoia / late joiner??
+			pstate = {};
+			game.playerState[pid] = pstate;
+			console.error("No player state for "+pid+"? - making a blank one now");
+		}
 		pstate.hand = pstate.hand.filter(c => c !== pstate.picked);
 		pstate.picked = false;
 		pstate.triviaGuess = false;

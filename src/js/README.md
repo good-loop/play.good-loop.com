@@ -1,9 +1,7 @@
 
-This folder holds the code for the portal -- served from `web-portal`
-`app.jsx` is the entry point
+# Ads Against Humanity - Online card game
 
-It also holds code for the standalone advert viewer -- where Facebook & Twitter users see shared adverts -- served from `web-as`.
-`as-app.js` is the entry point for that.
+## Known Issues / TODOs
 
-It is needed on the server!
-Webpack then creates the compiled files there on the server.
+1. Late joiners will probably get an error. We should either deal them in, or stop them from joining.
+2. Return in input box

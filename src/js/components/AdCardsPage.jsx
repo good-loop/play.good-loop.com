@@ -171,14 +171,19 @@ const TriviaStage = ({game, pid, isClient}) => {
 		AdCardsGame.setRoundStage(game, 'done');
 	}
 
+	const settriv = e => {
+		stopEvent(e);
+		game.playerState[pid].triviaGuess = triviaGuess||'pass';
+	}
+
 	return (<>
 			<h4>The winning slogan is: {game.winningCard}</h4>
 			
 			<h4>Trivia Bonus: Whose slogan was it really?</h4>			
-			<form className='flex-row'>
+			<form className='flex-row' onSubmit={settriv} >
 				<PropControl path={tpath} prop='brand' className='flex-grow mr-2' readOnly={isGuessMade} />
 				<Button color='primary' className='pl-3 pr-3' 
-					onClick={e => game.playerState[pid].triviaGuess = triviaGuess||'pass'}
+					onClick={settriv}
 					disabled={isGuessMade}
 				>{triviaGuess && triviaGuess!=='pass'? 'Enter':'Pass'}</Button>
 			</form>
