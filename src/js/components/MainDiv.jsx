@@ -21,6 +21,7 @@ import FullScreenButton from './FullScreenButton';
 import LobbyPage from './LobbyPage';
 import ConsequencesGame from './ConsequencesGame';
 import AdCardsPage from './AdCardsPage';
+import RulesPage from './RulesPage';
 
 // DataStore
 C.setupDataStore();
@@ -32,6 +33,7 @@ const PAGES = {
 	test: TestPage,
 	lobby: LobbyPage,
 	cards: AdCardsPage,
+	rules: RulesPage
 };
 
 const DEFAULT_PAGE = 'cards';

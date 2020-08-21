@@ -2,7 +2,7 @@
  * A convenient place for ad-hoc widget tests.
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
-import React, { useState } from 'react';
+import React, { useState, Children } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import SJTest, {assert} from 'sjtest';
@@ -32,7 +32,7 @@ const isInLobby = room => {
 /**
  * @param {String} world
  */
-const LobbyPage = ({title}) => {
+const LobbyPage = ({title,children}) => {
 	let wpath = ['misc','consequences'];
 	let pid = getPeerId();	
 	let game = DataStore.getUrlValue('game');
@@ -42,7 +42,7 @@ const LobbyPage = ({title}) => {
 	let room = roomId? DataStore.getValue('data','Room',roomId) : null;
 	
 	if ( ! room) {		
-		return <BG src='/img/lobby.jpg'><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} /></Container></BG>;
+		return <BG src='/img/lobby.jpg'><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} />{children}</Container></BG>;
 	}
 
 	let bg = '/img/lobby.jpg';
@@ -64,6 +64,7 @@ const LobbyPage = ({title}) => {
 				<Chatter room={room}/>
 			</Col>
 		</Row>
+		<Row>{children}</Row>
 	</Container></BG>);
 };
 
@@ -94,18 +95,13 @@ const Entrance = ({join}) => {
 		<Row>
 			<Col>
 				<Card body>
-					<CardTitle>Join a Room</CardTitle>
+					<CardTitle><h3>Join a Room?</h3></CardTitle>
 					<PropControl path={['widget','Lobby']} prop='room' label='Room ID' />
 					<Button onClick={() => joinRoom(join || DataStore.getValue('widget','Lobby','room'))}>Join</Button>
 				</Card>
 			</Col>
 			<Col>
-				{join? null : <Card body><CardTitle>Create a New Room</CardTitle><Button onClick={createRoom}>Create</Button></Card>}
-			</Col>
-		</Row>
-		<Row>
-			<Col>
-				<span className="black-bg white-text">Your ID: {getPeerId()}</span>
+				{join? null : <Card body><CardTitle><h3>Create a New Room?</h3></CardTitle><Button onClick={createRoom}>Create</Button></Card>}
 			</Col>
 		</Row>
 	</>);

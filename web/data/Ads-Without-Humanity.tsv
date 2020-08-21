@@ -1,13 +1,10 @@
-			e.g.	ACME	Prunes	Everything is easier on a ___						
-Products	Brand	Slogan	Product card	ACME	Tissues		Your hand	Refreshes the parts other ___ cannot reach		< The cards are random. Each person viewing this spreadsheet gets a different hand.		
-							of pitch cards	Think small				
-			Feel free to add products and slogans below :)					Taste the difference		 		
-Nappies								Everywhere You Want To Be		 		
+Products	Brand	Slogan	
+Nappies								
 Funeral	Nike	Just Do It										
-Condom	L'Oreal	Because You're Worth It			Rules	Play similar to Cards Against Humanity: On your turn, you are the client and read out the product card.						
-Toilet roll	M&Ms	Melts in your mouth, not in your hands				The other players pick and deliver their best pitch.						
-Bleach	Domestos	Kills all known germs. Dead.				You award the point to whichever pitch you like best.						 
-Bread	Burger King	Have it your way				Trivia Phase: people try to guess what actual brand the winning slogan came from.						 
+Condom	L'Oreal	Because You're Worth It			
+Toilet roll	M&Ms	Melts in your mouth, not in your hands				
+Bleach	Domestos	Kills all known germs. Dead.				
+Bread	Burger King	Have it your way				
 Milk	KFC	Finger lickin' good										
 Marijauna	Rice Crispies	Snap! Crackle! Pop!										
 Toilet brush	Sprite	Obey your thirst										
@@ -31,9 +28,9 @@ Rubber gloves	Martini	Any time any place anywhere
 Sausages	Audi	Vorsprung durch technik										
 Hemorrhoid cream	Ronseal	Does Exactly What it Says on the Tin										
 Family planning	Heineken	Refreshes the parts other ___ cannot reach										
-	Wheaties	Breakfast of champions										
-	Volkswagen	Think small										
-	Avis	We try harder										
+Teaspoons	Wheaties	Breakfast of champions										
+Dog biscuits	Volkswagen	Think small										
+Whisky	Avis	We try harder										
 	Coke	It's the real thing										
 	Levis	Quality never goes out of style										
 	Gillette	The best a man can get										
@@ -61,3 +58,6 @@ Family planning	Heineken	Refreshes the parts other ___ cannot reach
 	Pampers	Peaceful nights. Playful days.										
 	Huggies	Do it in ___										
 	Huggies	Look Mum, no leaks.										
+	Toshiba	Hello Tosh. Got a ___
+	Mastercard	There are some things money can't buy. For everything else there's ___
+	

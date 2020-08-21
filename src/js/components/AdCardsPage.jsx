@@ -24,11 +24,14 @@ import CSS from '../base/components/CSS';
 
 // Game states: Name -> Create / Join -> Start -> Enter -> Deliver stories
 
+
+const title = 'Ads Against Humanity';
+
 const AdCardsPage = () => {
 	let room = getCurrentRoom();
 	if ( ! room || isInLobby(room)) {
-		return (<LobbyPage title='Ads Without Humanity'>
-			TODO game options - showCards
+		return (<LobbyPage title={title}>
+			<Card body className='mt-2 linkcard'><div><a href='#rules/adcards'>Game Rules</a></div></Card>
 		</LobbyPage>);
 	}
 	if ( ! room.game || ! room.game.playerIds) {
@@ -47,9 +50,8 @@ const AdCardsPage = () => {
 	let clientMember = Room.member(room, game.client);
 	const isClient = pid === game.client;
 	const member = Room.member(room, pid);	
-	return (<Container fluid>
-		<CSS css="body {background: #333;}" />
-		<h3 className='game-title'>Ads Without Humanity</h3>
+	return (<Container fluid className='gameon'>		
+		<h3 className='game-title'>{title}</h3>
 		<Row>
 			<Col>								
 				<Card body color='dark'><h3>Client Rep: {clientMember.name || game.client} {isClient? " - That's You!" : null}</h3></Card>
@@ -97,13 +99,13 @@ const ClientView = ({game, member, pid}) => {
 		<Card body color='light'><h3>ACME {game.product}</h3></Card>
 		
 		{rstage==='brief'? <>
-			<p>Tell the Advertisers what the product is. Then click the button below.</p>
+			<p>Tell the Advertising Execs what the product is. Then click the button below.</p>
 			<center className={rstage!=='brief'? 'd-none' : null}>
 				<Button color='primary' onClick={e => AdCardsGame.setRoundStage(game, 'create')}>Let Them Get Creative</Button>
 			</center>
 		</> : null}
 
-		{rstage==='create'? <p>Waiting for the Advertisers... <WaitMsg advertisers /></p> : null}
+		{rstage==='create'? <p>Waiting for the Advertising Execs... <WaitMsg advertisers /></p> : null}
 
 		{rstage==='pitch'? <>
 			<p>The pitches are in! Read aloud the slogan pitches:</p>				
