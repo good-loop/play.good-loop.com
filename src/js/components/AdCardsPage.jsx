@@ -50,7 +50,8 @@ const AdCardsPage = () => {
 	let clientMember = Room.member(room, game.client);
 	const isClient = pid === game.client;
 	const member = Room.member(room, pid);	
-	return (<Container fluid className='gameon'>		
+	return (<Container fluid className='gameon'>
+		<BG src='https://www.nme.com/wp-content/uploads/2017/07/2017_MadMen_AMC_180717-696x442.jpg' size='unset' />
 		<h3 className='game-title'>{title}</h3>
 		<Row>
 			<Col>								
@@ -69,7 +70,7 @@ const AdCardsPage = () => {
 			</Col>
 			<Col>
 				<Peeps room={room} />
-				<Chatter room={room} />
+				<Chatter room={room} className='mt-2'/>
 			</Col>
 		</Row>
 	<div>Room: {room.id}, Host: {room.oid}, Stage: {game.roundStage}</div>

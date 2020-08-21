@@ -1,10 +1,10 @@
 
 import React from 'react';
 
-const BG = ({src, children, opacity=0.5}) => {
+const BG = ({src, children, opacity=0.5, size='cover'}) => {
 	let style= {
 		backgroundImage: `url('${src}')`,
-		backgroundSize: 'cover',
+		backgroundSize: size,
 		height:"100%", width:"100%",
 		position:'absolute',
 		top:0, left:0,right:0,bottom:0,
