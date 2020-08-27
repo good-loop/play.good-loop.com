@@ -16,7 +16,7 @@ import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
 import { stopEvent, copyTextToClipboard } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
-import BG from './BG';
+import BG from '../base/components/BG';
 import CGame from './ConsequencesGame';
 // Game states: Name -> Create / Join -> Start -> Enter -> Deliver stories
 

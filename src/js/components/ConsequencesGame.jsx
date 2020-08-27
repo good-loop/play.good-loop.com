@@ -15,7 +15,7 @@ import { Alert, Button, Modal, ModalHeader, ModalBody, Card, CardBody, Row, Col,
 import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId} from '../plumbing/peeringhack';
 import { stopEvent } from '../base/utils/miscutils';
-import BG from './BG';
+import BG from '../base/components/BG';
 import ServerIO from '../base/plumbing/ServerIOBase';
 import JSend from '../base/data/JSend';
 

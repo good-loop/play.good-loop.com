@@ -17,10 +17,10 @@ import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
 import { stopEvent, copyTextToClipboard, randomPick, space } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
-import BG from './BG';
 import LobbyPage, { isInLobby, Peeps, Chatter, peepName } from './LobbyPage';
 import AdCardsGame from './AdCardsGame';
 import CSS from '../base/components/CSS';
+import BG from '../base/components/BG';
 
 // Game states: Name -> Create / Join -> Start -> Enter -> Deliver stories
 
