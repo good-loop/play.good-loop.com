@@ -196,14 +196,24 @@ const TriviaStage = ({game, pid, isClient}) => {
  */
 const triviaMatch = (guess, answer) => {
 	if ( ! guess || ! answer) return;
-	let g = guess.trim().toLowerCase();
+	guess = toCanon(guess);		
 	if ( ! guess) return;
-	if (answer.trim().toLowerCase() == guess) {
+	// support alternative names, e.g. "coke / coca-cola" 
+	let answers = answer.split("/").map(toCanon);
+	if (answers.includes(guess)) {
 		return true;
 	}
-	// TODO coke = coca-cola, maxwell = maxwell house, and other corner cases
 	return false;
 };
+
+/**
+ * e.g. "L'Oreal " -> "loreal"
+ * @param {?string} s 
+ */
+const toCanon = s => {
+	if ( ! s) return s;
+	return s.toLowerCase().trim().replace(/\W/g,'');
+}
 
 
 const DoneStage = ({room, game,pid,isClient}) => {
