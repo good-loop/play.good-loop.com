@@ -148,10 +148,11 @@ AdCardsGame.brandForSlogan = slogan => {
 };
 
 const dealCardTo = (game, pid) => {
-	let phand = game.playerState[pid].hand;
+	let phand = AdCardsGame.getHand(game, pid);
 	let card = game.slogans[game.sloganIndex % game.slogans.length];
 	game.sloganIndex++;
 	phand.push(card);
+	console.log("	deal "+card+" to "+pid);
 };
 
 AdCardsGame.newRound = (game) => {
@@ -183,12 +184,18 @@ AdCardsGame.newRound = (game) => {
 	});
 	// deal new cards
 	game.playerIds.forEach(pid => {
-		const pstate = game.playerState[pid];
-		if (pstate.hand.length < HAND_SIZE) {
-			dealCardTo(game, pid);
-		}
+		AdCardsGame.dealCardsTo(game, pid);
 	});
 };
+
+AdCardsGame.dealCardsTo = (game, pid) => {
+	let hand = AdCardsGame.getHand(game, pid);		
+	let n = HAND_SIZE - hand.length;
+	for(let i=0; i<n; i++) {
+		dealCardTo(game, pid);
+	}
+};
+
 
 AdCardsGame.pickedCards = (game) => {
 	let picks = game.playerIds.map(pid => game.playerState[pid] && game.playerState[pid].picked);
@@ -196,11 +203,18 @@ AdCardsGame.pickedCards = (game) => {
 	return picks;
 };
 
+/**
+ * 
+ * @param {*} game 
+ * @param {*} pid 
+ * @returns {string[]} If you modify this, it changes the hand
+ */
 AdCardsGame.getHand = (game, pid) => {
-	if (!game.playerState || !game.playerState[pid]) {
+	if ( ! game.playerState || ! game.playerState[pid]) {
 		console.warn("Game not setup?! playerState missing", JSON.stringify(game));
 		return [];
 	}
+	if ( ! game.playerState[pid].hand) game.playerState[pid].hand = [];
 	return game.playerState[pid].hand;
 };
 

@@ -15,7 +15,7 @@ import PropControl, { setInputStatus } from '../base/components/PropControl';
 import { Alert, Button, Modal, ModalHeader, ModalBody, Card, CardBody, Row, Col, Container, Form, CardTitle } from 'reactstrap';
 import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
-import { stopEvent, copyTextToClipboard, randomPick, space } from '../base/utils/miscutils';
+import { stopEvent, copyTextToClipboard, randomPick, space, yessy } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
 import LobbyPage, { isInLobby, Peeps, Chatter, peepName } from './LobbyPage';
 import AdCardsGame from './AdCardsGame';
@@ -50,6 +50,17 @@ const AdCardsPage = () => {
 	let clientMember = Room.member(room, game.client);
 	const isClient = pid === game.client;
 	const member = Room.member(room, pid);	
+
+	// Wot no cards? Handle late joiners by dealing them in
+	if ( ! yessy(AdCardsGame.getHand(game, pid))) {
+		if ( ! game.playerIds.includes(pid)) {
+			console.warn("Push into the room!", pid, game.playerIds);
+			game.playerIds.push(pid);
+		}
+		if ( ! game.playerState[pid]) game.playerState[pid] = {};
+		AdCardsGame.dealCardsTo(game, pid);
+	}
+
 	return (<Container fluid className='gameon'>
 		<BG src='https://www.nme.com/wp-content/uploads/2017/07/2017_MadMen_AMC_180717-696x442.jpg' size='unset' />
 		<h3 className='game-title'>{title}</h3>
