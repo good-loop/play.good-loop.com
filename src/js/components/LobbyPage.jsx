@@ -14,7 +14,7 @@ import PropControl, { setInputStatus } from '../base/components/PropControl';
 import { Alert, Button, Modal, ModalHeader, ModalBody, Card, CardBody, Row, Col, Container, Form, CardTitle } from 'reactstrap';
 import DataClass, { nonce } from '../base/data/DataClass';
 import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
-import { stopEvent, copyTextToClipboard } from '../base/utils/miscutils';
+import { stopEvent, copyTextToClipboard, randomPick } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
 import BG from '../base/components/BG';
 import CGame from './ConsequencesGame';
@@ -29,6 +29,12 @@ const isInLobby = room => {
 	return ! room.state || ! room.state.stage || room.state.stage === 'lobby';
 };
 
+const LOBBIES = [
+	{url:"https://source.unsplash.com/POKM7TN9_48/640x427", author:"Michael Glass",citation:"https://unsplash.com/@the_odyssey_image"},
+	{url:"https://source.unsplash.com/Uhs7bhALLeM/640x426", author:"Ali Yahya",citation:"https://unsplash.com/@ayahya09"},
+	{url:"https://source.unsplash.com/TzlERxVhGfc/640x800", author:"Brandon Hooper",citation:"https://unsplash.com/@brh00p3r"},	
+];
+
 /**
  * @param {String} world
  */
@@ -40,12 +46,12 @@ const LobbyPage = ({title,children}) => {
 	let roomId = DataStore.getValue('misc','roomId');
 
 	let room = roomId? DataStore.getValue('data','Room',roomId) : null;
-	
+	let [bgLobby] = useState(randomPick(LOBBIES));
+
 	if ( ! room) {		
-		return <BG src='/img/lobby.jpg'><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} />{children}</Container></BG>;
+		return <BG image={bgLobby} minHeight="90vh"><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} />{children}</Container></BG>;
 	}
 
-	let bg = '/img/lobby.jpg';
 	let Guts;
 	if (isInLobby(room)) {
 		Guts = <RoomOpen room={room} />;
@@ -55,7 +61,7 @@ const LobbyPage = ({title,children}) => {
 		Guts = <CGame room={room} />;
 	}
 
-	return (<BG src={bg}><Container>
+	return (<BG image={bgLobby} minHeight="90vh"><Container>
 		{title? <h2>{title}</h2> : null}
 		<Row>
 			<Col>{Guts}</Col>

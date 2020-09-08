@@ -61,8 +61,9 @@ const AdCardsPage = () => {
 		AdCardsGame.dealCardsTo(game, pid);
 	}
 
-	return (<Container fluid className='gameon'>
-		<BG src='https://www.nme.com/wp-content/uploads/2017/07/2017_MadMen_AMC_180717-696x442.jpg' size='unset' />
+	return (
+		<BG src='https://www.nme.com/wp-content/uploads/2017/07/2017_MadMen_AMC_180717-696x442.jpg' minHeight='95vh' size='unset'>
+			<Container fluid className='gameon'>
 		<h3 className='game-title'>{title}</h3>
 		<Row>
 			<Col>								
@@ -85,7 +86,8 @@ const AdCardsPage = () => {
 			</Col>
 		</Row>
 	<div>Room: {room.id}, Host: {room.oid}, Stage: {game.roundStage}</div>
-	</Container>);
+	</Container>
+	</BG>);
 };
 
 const WAIT_MSGS = [
