@@ -49,7 +49,7 @@ const LobbyPage = ({title,children}) => {
 	let [bgLobby] = useState(randomPick(LOBBIES));
 
 	if ( ! room) {		
-		return <BG image={bgLobby} minHeight="90vh"><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} />{children}</Container></BG>;
+		return <BG image={bgLobby} fullscreen><Container>{title? <h2>{title}</h2> : null}<Entrance join={join} />{children}</Container></BG>;
 	}
 
 	let Guts;
@@ -61,7 +61,7 @@ const LobbyPage = ({title,children}) => {
 		Guts = <CGame room={room} />;
 	}
 
-	return (<BG image={bgLobby} minHeight="90vh"><Container>
+	return (<BG image={bgLobby} fullscreen><Container>
 		{title? <h2>{title}</h2> : null}
 		<Row>
 			<Col>{Guts}</Col>

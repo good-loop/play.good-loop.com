@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
-import SJTest, {assert} from 'sjtest';
+import SJTest, { assert } from 'sjtest';
 import Login from 'you-again';
 import DataStore, { getValue } from '../base/plumbing/DataStore';
 import C from '../C';
@@ -10,7 +10,7 @@ import StopWatch from '../StopWatch';
 import PropControl, { setInputStatus } from '../base/components/PropControl';
 import { Alert, Button, Modal, ModalHeader, ModalBody, Card, CardBody, Row, Col, Container, Form, CardTitle } from 'reactstrap';
 import DataClass, { nonce } from '../base/data/DataClass';
-import {Room,getPeerId,getCurrentRoom} from '../plumbing/peeringhack';
+import { Room, getPeerId, getCurrentRoom } from '../plumbing/peeringhack';
 import { stopEvent, copyTextToClipboard, randomPick, space } from '../base/utils/miscutils';
 import Messaging from '../base/plumbing/Messaging';
 import BG from '../base/components/BG';
@@ -21,9 +21,9 @@ import MDText from '../base/components/MDText';
 
 const RulesPage = () => {
 	return (
-		<BG src='/img/lobby.jpg'><Container><div className='p-4'>
-		<Card body className='mt-3 rules'><CardTitle><h3>Ads Against Humanity: Game Rules</h3></CardTitle>
-		<MDText source={`
+		<BG src='/img/lobby.jpg' fullscreen><Container><div className='p-4'>
+			<Card body className='mt-3 rules'><CardTitle><h3>Ads Against Humanity: Game Rules</h3></CardTitle>
+				<MDText source={`
 
 Welcome to Asstchi & Asstchi!
 The advertising agency that really believes in recycling.
@@ -59,9 +59,9 @@ Each round, one player is assigned as the Client Rep. They run the round. Everyo
 5. The game keeps track of your points, and shows them at the end of each round.
 
 That's it - Have fun!
-		`} />		
-		<Button color='primary' onClick={() => window.history.back()}>&larr; back</Button>
-		</Card></div>
+		`} />
+				<Button color='primary' onClick={() => window.history.back()}>&larr; back</Button>
+			</Card></div>
 		</Container></BG>
 	);
 };
