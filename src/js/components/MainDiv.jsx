@@ -22,6 +22,8 @@ import LobbyPage from './LobbyPage';
 import ConsequencesGame from './ConsequencesGame';
 import AdCardsPage from './AdCardsPage';
 import RulesPage from './RulesPage';
+import CarpeDiemPage from './CarpeDiemPage';
+import AboutPage from '../base/components/AboutPage';
 
 // DataStore
 C.setupDataStore();
@@ -30,10 +32,13 @@ C.setupDataStore();
 
 const PAGES = {
 	account: BasicAccountPage,
+	about: AboutPage,
 	test: TestPage,
 	lobby: LobbyPage,
 	cards: AdCardsPage,
-	rules: RulesPage
+	rules: RulesPage,
+	carpe: CarpeDiemPage,
+
 };
 
 const DEFAULT_PAGE = 'cards';

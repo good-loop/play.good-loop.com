@@ -21,7 +21,7 @@
 
     <div id="mainDiv"></div>
 
-    <footer class="footer">
+    <footer class="footer d-none d-md-block">
 		<center>
 			<a href='https://good-loop.com' target='_blank'><img alt="logo" class="logo pull-left" src="/img/gl-logo/LogoMark/logo.png" /></a>
 			<p class="text-muted">
@@ -72,7 +72,6 @@
         if (!isDebug) filename += '?cb=' + Math.random(); // force fresh loading on e.g. devices
         document.write('<script src="/build/js/' + filename + '"/><\/script>');
     </script>
-    <script async src='//as.good-loop.com/pxl.js'></script>
 	<img src='//lg.good-loop.com/pxl' style='position:absolute;bottom:0px;left:0px;width:1;height:1;' />
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-89730678-1"></script>
