@@ -66,7 +66,7 @@ StopWatch.time = sw => {
 
 /**
  * Update and fetch tick. Also updates dt
- * @returns {?Number} null if the last call to tick was less than tickLength.
+ * @returns {?Number} tick (msecs). null if the last call to tick was less than tickLength.
  */
 StopWatch.update = sw => {	
 	let newTick = StopWatch.time(sw);

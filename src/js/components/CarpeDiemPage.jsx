@@ -20,15 +20,85 @@ import CSS from '../base/components/CSS';
 import MDText from '../base/components/MDText';
 import Command, { doq } from '../data/Command';
 import { Draggable, DropZone } from '../base/components/DragDrop';
+import GameLoop from '../plumbing/GameLoop';
+import EvilTasks from '../data/EvilTasks';
+
+let game = {
+	date: new Date("2020-01-01"),
+	emails: [],
+	/** e.g. "2020-01-02" (jan 2nd) */
+	day4sdate: {}
+};
+window.game = game; // debug
+
+class Day {
+	/** e.g. "2020-01-02" (jan 2nd) */
+	sdate;
+	am;
+	pm;
+	constructor(sdate) {
+		this.sdate = sdate;
+	}
+}
+
+class Spawner {
+	constructor(msecs) {
+		this.msecs = msecs;
+		assert(msecs > 10, "Spawner - msecs ",msecs);
+	}
+}
+Spawner.update = (spawner, tickMsecs) => {
+	if ( ! spawner.tick) {
+		spawner.tick = tickMsecs;
+		return true;
+	}
+	if (tickMsecs < spawner.tick + spawner.msecs) return;
+	spawner.tick = tickMsecs;
+	return true;
+};
+
+let emailSpawner = new Spawner(5000);
+
+let onTick = (tick, stopwatch) => {
+	Command.tick(tick);
+	// a new email?
+	if (Spawner.update(emailSpawner, tick)) {
+		let todo = randomPick(EvilTasks);
+		doq(new Command(todo, "todo"));
+		if (emailSpawner.msecs > 200) emailSpawner.msecs -= 100; // a bit faster every time!
+	}
+};
+
+
+Command.setHandler({
+	verb:"game-over", 
+	onStart:cmd => {
+		console.error("GAME OVER");
+	}
+});
+
+Command.setHandler({
+	verb:"todo", 
+	onStart:cmd => {
+		game.emails.push(new ToDo(cmd.subject));
+		if (game.emails.length > 6) {
+			doq(new Command(null, "game-over"));
+		}
+	}
+});
 
 const CarpePage = () => {
-
-	useEffect(() => {
-		doq(new Command("Dr Evilstein","say", "Hello"));
-	}, []);
+	
+	// let game = Game.get();
+	let gameLoop = GameLoop.get();
+	if ( ! gameLoop) {
+		// Start!
+		gameLoop = new GameLoop({onTick})
+		doq(new Command("Dr Evilstein","say", "Hello"));		
+	}
 
 	return (<Container fluid className="h-100">
-		<div className='score'>Score etc</div>
+		<div className='score'>Score etc {Misc.dateTag(game.date)} </div>
 		<Row className='h-100'>
 			<Col sm={4}><Inbox /></Col>
 			<Col sm={8} ><Calendar /></Col>
@@ -44,15 +114,8 @@ class ToDo {
 	}
 }
 
-let emails = [
-	new ToDo("Water the plants"),
-	new ToDo("Paint the spare dungeon"),
-	new ToDo("Push Granny off the bus"),
-	new ToDo("Invent freeze gun"),
-];
-
 const Inbox = () => {
-	return <div className='inbox'>{emails.map(e => <Email key={e.id} email={e}/>)}</div>
+	return <div className='inbox'>{game.emails.map(e => <Email key={e.id} email={e}/>)}</div>
 };
 const Email = ({email}) => {
 	return <div className='email'><Draggable id={email.id}>{email.msg}</Draggable></div>;
@@ -60,24 +123,36 @@ const Email = ({email}) => {
 
 const Calendar = () => {
 	let sdays = "";
-	for(let i=0; i<6*7; i++) sdays += " "+i
+	for(let i=0; i<6*7; i++) sdays += " 2020-01-"+i
 	let days = sdays.trim().split(" ");
 	return (<div className='calendar gridbox gridbox-sm-7'>
-		{days.map(day => <DayBox key={day} day={day}></DayBox>)}
+		{days.map(day => <DayBox key={day} sdate={day}></DayBox>)}
 	</div>);
 };
 
-const drop = (day, e, dropInfo) => {
-	// console.warn("drop", e, dropInfo, e.dataTransfer, e.currentTarget); 
-	foo[""+day] = (dropInfo && dropInfo.draggable) || 'X';
-};
-let foo = {};
-const DayBox = ({day}) => {
-	let msg = null;
-	if (foo[day]) {
-		msg = (emails.find(e => e.id===foo[day]) || {}).msg || foo[day];
+const drop = (sdate, e, dropInfo) => {	
+	let email = game.emails.find(e => e.id === dropInfo.draggable);
+	if ( ! email) {
+		console.error("drop No Task?!", dropInfo);
+		return;
 	}
-	return <div className='DayBox'><DropZone onDrop={(e,dropInfo) => drop(day,e,dropInfo)}>{day} {msg}</DropZone></div>;
+	let day = game.day4sdate[sdate];
+	if ( ! day) {
+		day = new Day(sdate);
+		game.day4sdate[sdate] = day;
+	}
+	console.warn("drop", email, day, e, dropInfo);	
+	day.am = email;
+	game.emails = game.emails.filter(e => e !== email);
+};
+
+const DayBox = ({sdate}) => {
+	let msg = null;
+	let day = game.day4sdate[sdate];
+	if (day && day.am) {
+		msg = day.am.msg;
+	}
+	return <div className='DayBox'><DropZone id={sdate} onDrop={(e,dropInfo) => drop(sdate,e,dropInfo)}>{sdate} {msg}</DropZone></div>;
 };
 
 export default CarpePage;
