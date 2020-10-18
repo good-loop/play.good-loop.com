@@ -9,6 +9,7 @@ let EvilTasks = [
 	"Pee in the holy water",
 	"Polish the booby traps",
 	"Queue jump",
+	"Take candy from a baby",
 
 	"Invent freeze gun",
 	"Steal the crown jewels",
@@ -18,7 +19,7 @@ let EvilTasks = [
 	"Invest in fossil fuels",
 	"File tax-dodging return",
 	"Anger mismanagement class",
-	"Speech at VillianCon",
+	"Speech at Villian-Con",
 	"Loot boxes",
 
 	"Recruit a lesser villian",
@@ -29,17 +30,22 @@ let EvilTasks = [
 	"Pact with the devil",
 	"Open inter-dimensional portal",
 	"Start a war",
-	"Satanic rituals",
+	"Satanic ritual",
 	"Desecrate burial ground",
 	"Go clubbing (seals)",
 
 	"Panda sandwiches",
 	"Whale stew",
 	"Dolphin burgers",
+	"Roast tiger",
 
 	"Vote for Trump", "Vote for Trump",
+	"Write Daily Mail editorial",
+	"Guest slot on Fox News",
+	"Partner with Rupert Murdoch",
+	"Camp (Uyghurs)",
 	"Vote for Boris Johnson",
-	"Shake hands with everyone",
+	"Shake hands with everyone", "Shake hands with everyone",
 	"Create a reality TV show",
 ];
 

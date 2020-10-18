@@ -4,6 +4,7 @@ import { assMatch, assert } from '../base/utils/assert';
 import StopWatch from '../StopWatch';
 import { space } from '../base/utils/miscutils';
 import printer from '../base/utils/printer';
+import DataStore from '../base/plumbing/DataStore';
 
 // copy pasta
 
@@ -93,7 +94,13 @@ Command.str = c => space(c.id, DataClass.str(c.subject), c.verb, c.object, c.val
 Command.tick = (tick) => {
 	const c = Command.peek();
 	if ( ! c) return false;
-	if ( ! c.startTick) c.startTick = tick;
+	if ( ! c.started) {
+		console.warn("Command Q error: tick but not started?!", c); // swallow the error, and start now
+		Command.start(c);
+	}
+	if ( ! c.startTick) {
+		c.startTick = tick;		
+	}
 	c.latestTick = tick;
 	let dmsecs = tick - c.startTick;
 	if (dmsecs < c.duration) {
@@ -119,7 +126,6 @@ Command.tick = (tick) => {
 	if (c2) {
 		assert( ! c2.started, "Already started?!",c2, "after",c);
 		Command.start(c2);
-		c2.started = true;
 		return c2;
 	}
 	// all done
@@ -156,7 +162,6 @@ export const cmd = (command) => {
 	if (Command._q.length===1) {
 		assert( ! command.started, "No - Already started?!", command);
 		Command.start(command);
-		command.started = true;
 	}
 };
 
@@ -180,7 +185,11 @@ const finisher4verb = {};
 Command.start = command => {
 	console.log("start", Command.str(command));
 	let ufn = starter4verb[command.verb];
-	if (ufn) ufn(command);
+	if (ufn) {
+		ufn(command);
+		DataStore.update();
+	}
+	command.started = true;
 }; // ./start
 
 /**
@@ -190,7 +199,10 @@ Command.start = command => {
 Command.finish = command => {
 	console.log("finishing...", Command.str(command));
 	let ufn = finisher4verb[command.verb];
-	if (ufn) ufn(command);
+	if (ufn) {
+		ufn(command);
+		DataStore.update();
+	}
 	console.log("...finished", Command.str(command));
 }; // ./finish
 
@@ -201,5 +213,8 @@ Command.finish = command => {
 Command.updateCommand = (command, msecs) => {
 	const fraction = msecs / command.duration;
 	let ufn = updater4verb[command.verb];
-	if (ufn) ufn(command, msecs, fraction);
+	if (ufn) {
+		ufn(command, msecs, fraction);
+		DataStore.update();
+	}
 }; // ./updateCommand

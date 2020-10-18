@@ -2,83 +2,86 @@
  * A convenient place for ad-hoc widget tests.
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
-import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
-import Enum from 'easy-enums';
+import React, {  } from 'react';
 import _ from 'lodash';
-import SJTest, { assert } from 'sjtest';
-import Login from 'you-again';
-import DataStore from '../base/plumbing/DataStore';
-import C from '../C';
-import Game, { doLoad, doSave, doReset } from '../Game';
+import { Alert, Button, Card, CardTitle, Col, Container, Row } from 'reactstrap';
+import Command, { doq } from '../data/Command';
+import BG from '../base/components/BG'
+import Cookies from 'js-cookie';
 import Misc from '../base/components/Misc';
-import Sprite from '../data/Sprite';
-import SpriteLib from '../data/SpriteLib';
-import Tile from '../data/Tile';
-import PixiComponent from './PixiComponent';
-import StopWatch from '../StopWatch';
-import PropControl, { setInputStatus } from '../base/components/PropControl';
-import * as PIXI from 'pixi.js';
-// import * as PIXISound from 'pixi-sound';
-import Key, { KEYS } from '../Key';
-import { Alert, Button, Modal, ModalHeader, ModalBody, Row, Col, Card, CardTitle } from 'reactstrap';
-import { getPApp } from './Pixies';
-import DataClass, { nonce, getType } from '../base/data/DataClass';
-import GameAdmin, { doNewWorld } from './GameAdmin';
-import FullScreenButton from './FullScreenButton';
-import Fight from '../data/Fight';
-import Spell from '../data/Spell';
-import Monster from '../data/Monster';
-
-import ReactVivus from 'react-vivus';
-import { space, randomPick, modifyHash } from '../base/utils/miscutils';
-import Command, { cmd } from '../data/Command';
-import printer from '../base/utils/printer';
+import { isMobile } from '../base/utils/miscutils';
 // import svg from '../img/angry-robot.svg';
-import { Howl, Howler } from 'howler';
 
 
-const DrawReactSVG = ({id, src, height = "200px", width = "200px", duration = 70 }) => {
-	if ( ! id) [id] = useState(nonce(6));
-	return (<ReactVivus
-		id={id}
-		option={{
-			file: src,
-			type: 'oneByOne',
-			// animTimingFunction: 'EASE',
-			duration,
-			onReady: console.log
-		}}
-		style={{ height, width }}
-		callback={console.log}
-	/>);
+
+
+
+const SplashScreen = ({game}) => {	
+	return <div id='SplashScreen'>
+		<BG src='/img/bg/james_vaugn_x-ray_delta_one_flickr_4970199230_e4e9de6a7a_c.jpg' fullscreen opacity={80} />
+		<h1><span className='caps'>PA</span> to <span className='caps'>E</span>vil</h1>
+		
+		<Container>
+			{isMobile() && <Alert color='warning'>Sorry - not ready for mobile yet!</Alert>}
+			<Row>
+				<Col>
+				{game && game.prevDate && <LastScore game={game} />}
+				<HighScore game={game} />
+				</Col>
+				<Col className='newspaper'>
+					<Card body className='courier'>
+						<CardTitle><h3>Position Vacant</h3></CardTitle>
+						<p>
+							<b>Personal assistant to Dr Evilstein.</b> Taking over the world is hard work. Manage Dr Evilstein's busy calendar.
+						</p>
+						<Button color='primary' size='lg' onClick={() => doq(new Command("game","screen"))}>Play!</Button>
+					</Card>
+				</Col>
+			</Row>
+			<div id='about'>
+				&copy; Daniel Winterstein 2020, with code from <a href='https://good-loop.com' target="_blank">Good-Loop</a> and
+				many other open-source heroes (see <a href='https://github.com/good-loop/play.good-loop.com' target="_blank">source code</a> for details).
+				Images from creative commons stars Benson Kua, James Vaugn, plus <a href='https://pixton.com' target="_blank">Pixton Edu</a> and Pixabay.
+			</div>
+		</Container>
+		
+	</div>;
 };
 
-/**
- * get some user interaction so we can play audio
- */
-let goFlag;
+const LastScore = ({game}) => {
+	if ( ! game || ! game.prevScore) return null;
+	return <div id='LastScore'>
+		<h3>Survived to: {Misc.dateStr(game.prevDate)}</h3>
+		<h3>Score: {""+game.prevScore}</h3>
+	</div>;
+};
 
-const SplashScreen = () => {
-	if ( ! goFlag) {
-		return <div className='flex-column w-100' style={{height:"80vh"}}><Button color='primary' onClick={() => {
-			goFlag=true;
-			DataStore.update();
-		}}>Launch</Button></div>;
+const HighScore = ({game={}}) => {
+	let highScore = Cookies.get("hiscore");
+	let highScoreDate = Cookies.get("hiscoredate");
+	if ( ! highScore) {
+		if ( ! game.prevScore) return null;
+		highScore = game.prevScore;
+		highScoreDate = Misc.dateStr(game.prevDate);
+		game.isHighScore = true;
 	}
-	// useEffect(playThemeSong);
-	// // shrink to normal - not working - svg is hidden
-	// let style = {transform:"scale(5)"};
-	// if (playingFlag) {
-	// 	style.transform="scale(1)";
-	// 	style.transition="all 5s";
-	// }
-	return <><div className='animation-window'>
-		<DrawReactSVG id='splash-img' src='/img/src/celtic/celtic-swirl.svg' width='500px' height='400px' duration={1000} />
-	</div>
-			<h1>The Kilfearn Chronicles</h1>
-			<Button color='primary'>New Game</Button>
-	</>;
+	if (game.prevScore > highScore) {
+		game.isHighScore = true;
+		highScore = game.prevScore;
+		highScoreDate = Misc.dateStr(game.prevDate);
+	}
+	if (game.isHighScore) {
+		Cookies.set("hiscore", highScore);
+		Cookies.set("hiscoredate", highScoreDate);
+	}
+	// TODO cookie get
+	return <div id='hiscore'>
+		<div className='gravetext'>
+		<h2>{game.isHighScore && "NEW"} High Score</h2>		
+		<h2>{highScore}</h2>
+		<h2>{highScoreDate}</h2>
+		</div>
+	</div>;
 };
 
 // TODO

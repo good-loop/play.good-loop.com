@@ -21,12 +21,6 @@ class GameLoop {
 	/** @type {!Command[]} This is passed into Command.setQueue() */
 	cmdq = [];
 
-	close() {
-		console.warn("close", this, new Error());
-		this.stopFlag = true;
-		if (this.onClose) onClose();
-	}
-
 	/**
 	 * 
 	 * @param {Function} onTick (EpochMSecs, StopWatch) -> any
@@ -37,7 +31,7 @@ class GameLoop {
 		this.onClose = onClose;			
 		
 		this.ticker = new StopWatch();
-		this.ticker.tickLength = 1000/20; // snappy steps
+		this.ticker.tickLength = 1000/25; // 25fps fairly snappy steps
 		
 		// start paused!
 		StopWatch.pause(this.ticker);
@@ -81,5 +75,11 @@ GameLoop.start = gl => {
 	// Go!
 	GameLoop._loop(gl);
 };
+GameLoop.close = gl => {
+	console.warn("close", gl, new Error());
+	gl.stopFlag = true;
+	if (gl.onClose) onClose();
+}
+
 
 export default GameLoop;

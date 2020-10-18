@@ -187,9 +187,6 @@ const ShareLink = ({room}) => {
 	</>);
 };
 
-// HACK
-setInterval(() => DataStore.update({}), 500);
-
 const getName = () => getValue('misc','player','name');
 
 const createRoom = () => {

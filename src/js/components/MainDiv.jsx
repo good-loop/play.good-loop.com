@@ -125,4 +125,7 @@ class MainDiv extends Component {
 	} // ./render()
 } // ./MainDiv
 
+// HACK (10+ fps)
+setInterval(() => DataStore.update({}), 80);
+
 export default MainDiv;

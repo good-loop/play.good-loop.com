@@ -25,21 +25,42 @@ import EvilTasks, { taskSizes } from '../data/EvilTasks';
 import { assMatch } from '../base/utils/assert';
 import { prettyNumber } from '../base/utils/printer';
 import ChatLine from './ChatLine';
+import SplashScreen from './SplashScreen';
 
-let game = {
-	/** @type {Command} */
-	say:null,
-	over: false,
-	score: 0,
-	/** The date for the top-left of the calendar */
-	date0: new Date("2019-12-30"),
-	/** today (NB: this will get +1 straight away) */
-	date: new Date("2019-12-31"),
-	emails: [],
-	/** e.g. "2020-01-02" (jan 2nd) */
-	day4sdate: {}
+// NB freshly made so no shared structure
+
+let game;
+let emailSpawner;
+let daySpawner;
+let gameLoop;
+let talkLoop;
+let splashLoop;
+
+const newGame = () => {	
+	emailSpawner = new Spawner(4000);
+	daySpawner = new Spawner(4000);
+	if (gameLoop) GameLoop.close(gameLoop);
+	gameLoop = new GameLoop({onTick});
+	if (talkLoop) GameLoop.close(talkLoop);
+	talkLoop = new GameLoop({onTick: onTickTalk});
+	if (splashLoop) GameLoop.close(splashLoop);
+	splashLoop = new GameLoop({onTick: Command.tick});
+
+	return {
+		screen:"splash",
+		/** @type {Command} */
+		say:null,
+		over: false,
+		score: 0,
+		/** The date for the top-left of the calendar */
+		date0: new Date("2019-12-30"),
+		/** today (NB: this will get +1 straight away) */
+		date: new Date("2019-12-31"),
+		emails: [],
+		/** e.g. "2020-01-02" (jan 2nd) */
+		day4sdate: {}
+	};
 };
-window.game = game; // debug
 
 class Day {
 	/** e.g. "2020-01-02" (jan 2nd) */
@@ -73,9 +94,6 @@ Spawner.update = (spawner, tickMsecs) => {
 	spawner.tick = tickMsecs;
 	return true;
 };
-
-let emailSpawner = new Spawner(5000);
-let daySpawner = new Spawner(5000);
 
 let onTick = (tick, stopwatch) => {
 	Command.tick(tick);
@@ -113,6 +131,25 @@ let onTick = (tick, stopwatch) => {
 };
 
 Command.setHandler({
+	verb:"screen", 
+	onStart:cmd => {
+		// TODO transition
+		game.screen = cmd.subject;
+		if (cmd.subject==='splash') {
+			// last run score
+			let prevDate = game.date;
+			let prevScore = game.score;
+			// reset the game
+			game = newGame();
+			// for highscore
+			game.prevDate = prevDate;
+			game.prevScore = prevScore;
+		}
+	}
+});
+
+
+Command.setHandler({
 	verb:"start", 
 	onStart:cmd => {
 		game.say = null;
@@ -127,11 +164,23 @@ Command.setHandler({
 	onStart:cmd => {
 		console.error("GAME OVER");
 		GameLoop.pause(gameLoop);
-		GameLoop.start(talkLoop); // this will swap the command qs
+		GameLoop.start(talkLoop); // this will swap the command qs		
 		let msg = "What?!";
 		if (cmd.subject==="overload") {
+			// complaint
+			let complaint = new Command("A Valued Customer","say", randomPick([
+				"Dear Dr Evilstein, Your diary minion has ignored my request!",
+				"Dear Dr Evilstein, Your diary minion has not got back to me!",
+				"Dear Dr Evilstein, When is our meeting?",
+				"Dr Evilstein, You've ignored my meeting request - Don't you care for me anymore?"
+			]));
+			complaint.img = '/img/person/'+randomPick(["pumpkin-vampire","pumpkin-vampire",'ghost','cyborg','robot-villian','eye-man'])+'.svg';
+			doq(complaint);
+
 			msg = randomPick([
 				"The inbox is overflowing!",
+				"What?! You have kept the clients waiting!",
+				"Why, why, why?! (sobs) Why am I surrounded by such incompetence?",
 				"What is this? I will not tolerate a messy inbox!",
 				"I told you to manage your inbox! Not to let it overflow like a hooker's bra!",
 				"Your inbox has overflowed! This is unacceptable.",
@@ -144,7 +193,7 @@ Command.setHandler({
 			]);
 		}
 		
-		msg = "(angry) "+msg;
+		msg ="("+randomPick(["angry", "angry", "v angry"])+") "+msg;
 		doq(new Command("Dr Evilstein","say", msg));
 
 		let msgDie = randomPick([
@@ -154,6 +203,7 @@ Command.setHandler({
 			"And so another diary secretary ends up as shark-food... Is it me? Am I doing something wrong?",
 		]);
 		doq(new Command("Dr Evilstein","say", "(angry) "+msgDie));
+		doq(new Command("splash","screen"));
 	}
 });
 
@@ -174,12 +224,16 @@ Command.setHandler({
 	onStart:cmd => {
 		assMatch(cmd.object, Number, cmd);
 		cmd.endScore = game.score + cmd.object;
+		cmd.duration = 400;
+		game.juiceScore = true;
 	},
 	onUpdate: (cmd, msecs, fraction) => {
+		game.juiceScore = true;
 		game.score = cmd.endScore - cmd.object*(1-fraction);
 	},
 	onEnd: cmd => {
 		game.score = cmd.endScore;
+		game.juiceScore = false;
 	}
 });
 
@@ -190,21 +244,7 @@ Command.setHandler({
 	onStart:cmd => {
 		if ( ! cmd.subject) cmd.subject = randomPick(EvilTasks);
 		// if ( ! cmd.size) cmd.size = randomPick(taskSizes);
-
-		let todo = new ToDo(cmd.subject);
-		// todo.size = cmd.object; 
-		todo.color = randomPick(["#ADC4CE","#EEE0C9","#E4DECB","#E2F0CB","#bae1ff","#f1cbff", "#fff"]);
-		todo.size = randomPick(taskSizes);
-
-		if ( ! todo.size) { // bug workaround - how does this happen?
-			todo.size = randomPick(taskSizes);			
-			if ( ! todo.size) {
-				console.error("No size?!", JSON.stringify(taskSizes), cmd);
-				todo.size = taskSizes[0];
-			}
-		}
-
-		game.emails.push(todo);
+		addToDo(cmd.subject);
 		// overload?
 		if (game.emails.length > MAX_EMAILS) {
 			game.over = true;
@@ -212,6 +252,23 @@ Command.setHandler({
 		}
 	}
 });
+
+const addToDo = text => {
+	let todo = new ToDo(text);
+	// todo.size = cmd.object; 
+	todo.color = randomPick(["#ADC4CE","#EEE0C9","#E4DECB","#E2F0CB","#bae1ff","#f1cbff", "#fff"]);
+	todo.size = randomPick(taskSizes);
+
+	if ( ! todo.size) { // bug workaround - how does this happen?
+		todo.size = randomPick(taskSizes);			
+		if ( ! todo.size) {
+			console.error("No size?!", JSON.stringify(taskSizes), cmd);
+			todo.size = taskSizes[0];
+		}
+	}
+
+	game.emails.push(todo);
+};
 
 
 Command.setHandler({
@@ -229,24 +286,31 @@ let onTickTalk = (tick, stopwatch) => {
 };
 
 
-let gameLoop = new GameLoop({onTick});
-let talkLoop = new GameLoop({onTick: onTickTalk});
-
 const CarpePage = () => {
+	if ( ! game) game = newGame();
+	// splash screen?
+	if (game.screen==='splash') {
+		if ( ! splashLoop.startFlag) {
+			GameLoop.start(splashLoop);
+		}
+		return <SplashScreen game={game} />;
+	}
 	// Start with the intro
 	if ( ! talkLoop.startFlag) {
 		// Start!
+		addToDo("Schedule your first task");
 		GameLoop.start(talkLoop);
 		doq(new Command("Dr Evilstein","say", "Hello - You must be my new diary secretary."));
 		doq(new Command("Dr Evilstein","say", "It's a simple job - just drag tasks from the inbox, and drop them into the calendar."));
-		doq(new Command("Dr Evilstein","say", "Don't let your inbox overflow!"));
+		doq(new Command("Dr Evilstein","say", "But remember - I like to keep my weekends free."));
+		doq(new Command("Dr Evilstein","say", "Above all: Don't let your inbox overflow!"));
 		doq(new Command(null, "start"));
 	}
 
-	return (<Container fluid className="h-100">
+	return (<Container fluid className="h-100 gameon">
 		<CSS css="footer{display:none !important;}" />
-		<div className='score'>{Misc.dateTag(game.date)} <span className='pull-right'>Score {prettyNumber(Math.round(game.score), 10)}</span></div>
-		<Row className={space('h-100',game.say&&"defocus")}>
+<div className='score'>{Misc.dateTag(game.date)} <span className={space('pull-right', game.juiceScore&&"juice")}>Score {prettyNumber(Math.round(game.score), 10)}</span></div>
+		<Row className={space('gamebox',game.say&&"defocus")}>
 			<Col sm={4}><Inbox /></Col>
 			<Col sm={8} ><Calendar /></Col>
 		</Row>
@@ -263,10 +327,13 @@ class ToDo {
 }
 
 const Inbox = () => {
+	let warning = game.emails.length >= MAX_EMAILS && 'danger';
+	if (game.emails.length===MAX_EMAILS-1) warning = 'warning';	
 	return (<>
 		<div className='weekdays'>Inbox</div>
-		<div className={space('inbox', game.emails.length===MAX_EMAILS-1&&'warning', game.emails.length >= MAX_EMAILS&&'danger')}>
-			{game.emails.map(e => <Email key={e.id} email={e}/>)}
+		<div className={space('inbox', warning)}>
+			<div className='emails'>{game.emails.map(e => <Email key={e.id} email={e}/>)}</div>
+			<div className='info'>💀 Inbox Zero! Dr Evilstein will not tolerate slack 💀</div>
 		</div>
 		</>)
 };
@@ -316,6 +383,20 @@ const plus1Day = date => {
 	return date;
 };
 
+const findTask = emailId => {
+	// inbox?
+	let email = game.emails.find(e => e.id === emailId);
+	if (email) return email;
+	// from the calendar?
+	const days = Object.values(game.day4sdate);
+	let emailDay = days.find(d => (d.am && d.am.id === emailId) || (d.pm && d.pm.id === emailId));
+	if ( ! emailDay) {
+		return null; // fail?!
+	}
+	if (emailDay.am && emailDay.am.id === emailId) return emailDay.am;
+	return emailDay.pm;
+}
+
 /**
  * 
  * @returns {sdate: am/pm/am+pm}
@@ -324,7 +405,7 @@ const dropOnDays = (emailId, sdate) => {
 	if ( ! emailId || ! sdate) {
 		return;
 	}
-	let email = game.emails.find(e => e.id === emailId);
+	let email = findTask(emailId);
 	if ( ! email) {
 		return;
 	}
@@ -362,27 +443,33 @@ const canDrop = (sdate, email) => {
 	let ams = email.size[0];
 	let pms = email.size[1];
 	let day = game.day4sdate[sdate];
-	if (ams[0]==="x" && day.am) return false;
-	if (pms[0]==="x" && day.pm) return false;	
+	if (ams[0]==="x" && day.am && day.am !== email) return false;
+	if (pms[0]==="x" && day.pm && day.pm !== email) return false;	
 	
 	let date1 = new Date(sdate)
 	plus1Day(date1);
 	let sdate1 = isoDate(date1)
 	let day1 = game.day4sdate[sdate1] || {};
-	if (ams[1]==="x" && day1.am) return false;
-	if (pms[1]==="x" && day1.pm) return false;	
+	if (ams[1]==="x" && day1.am && day1.am !== email) return false;
+	if (pms[1]==="x" && day1.pm && day1.pm !== email) return false;	
 
 	plus1Day(date1);
 	let sdate2 = isoDate(date1)
 	let day2 = game.day4sdate[sdate2] || {};
-	if (ams[2]==="x" && day2.am) return false;
-	if (pms[2]==="x" && day2.pm) return false;	
+	if (ams[2]==="x" && day2.am && day2.am !== email) return false;
+	if (pms[2]==="x" && day2.pm && day2.pm !== email) return false;	
 	
 	return true;
 };
 
+/**
+ * 
+ * @param {*} sdate 
+ * @param {*} e 
+ * @param {!DropInfo} dropInfo 
+ */
 const drop = (sdate, e, dropInfo) => {	
-	let email = game.emails.find(e => e.id === dropInfo.draggable);
+	let email = findTask(dropInfo.draggable);
 	if ( ! email) {
 		console.error("drop No Task?!", dropInfo);
 		return;
@@ -398,6 +485,12 @@ const drop = (sdate, e, dropInfo) => {
 		// TODO play sound
 		return;
 	}
+	// remove from calendar
+	const days = Object.values(game.day4sdate);
+	days.forEach(d => {
+		if (d.am && d.am.id === email.id) d.am = null;
+		if (d.pm && d.pm.id === email.id) d.pm = null;
+	});
 	// drop where? HACK
 	let date1 = new Date(sdate)
 	plus1Day(date1);
@@ -452,14 +545,14 @@ const DayBox = ({sdate, dragover}) => {
 
 	let $boxDate = <div className='box-date'>{space(date.getDate()===1 && MONTHS[date.getMonth()], date.getDate())}</div>;
 	let amStyle = styleSlot(day.am, dragover&&dragover.includes("am"), dragover);
-	let $am = <div className='box-am' style={amStyle} >{amMsg}</div>;
-	// let $am = <div className={space('box-am', amMsg&&"full")} style={{backgroundColor:day.am&&day.am.color}}>{amMsg}</div>;
-	let $pm = <div className='box-pm' style={styleSlot(day.pm, dragover&&dragover.includes("pm"), dragover)} >{pmMsg}</div>;
+	let pmStyle = styleSlot(day.pm, dragover&&dragover.includes("pm"), dragover);
 
 	if (day.done) {
 		let isToday = sdate === isoDate(game.date);
 		return (<div className={space('DayBox done', isToday&&"today")}>
-			{$boxDate}{$am}{$pm}
+			{$boxDate}
+			<div className='box-am' style={amStyle} >{amMsg}</div>
+			<div className='box-pm' style={pmStyle} >{pmMsg}</div>
 			{isToday && <img src='/img/person/dr-evilstein-fwd.svg' className='dr-evilstein' />}
 		</div>);
 	}
@@ -469,7 +562,11 @@ const DayBox = ({sdate, dragover}) => {
 			onDrop={(e,dropInfo) => drop(sdate,e,dropInfo)}
 			canDrop={(dragId,zoneId) => ! (amMsg && pmMsg)}
 		>
-			{$boxDate}{$am}{$pm}
+			{$boxDate}
+			{day.am? <Draggable id={day.am.id} className='box-am' style={amStyle} >{amMsg}</Draggable>
+			 : <div className='box-am' style={amStyle} > </div>}
+			{day.pm? <Draggable id={day.pm.id} className='box-pm' style={pmStyle} >{pmMsg}</Draggable>
+			 : <div className='box-pm' style={pmStyle} > </div>}
 		</DropZone>
 	</div>);
 };

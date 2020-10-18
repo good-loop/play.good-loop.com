@@ -17,8 +17,12 @@ import { Button } from 'reactstrap';
  * regex for dialogue, e.g. `Mom: (happy) We're off!` or `Omega "Morphing Person": Welcome`
  * match = [all, person, label, emotion, said]
  */
-const rSpeech = /^([a-zA-Z0-9 ]+)("[a-zA-Z0-9 ]+")?: ?(\([a-z ]+\)|)(.+)/;
+const rSpeech = /^([a-zA-Z0-9 ]+)("[a-zA-Z0-9\- ]+")?: ?(\([a-z ]+\)|)(.+)/;
 
+/**
+ * 
+ * @param {?Command} cmd {img, duration}
+ */
 const ChatLine = ({ cmd, line }) => {
 	let m = splitLine(line);
 	if (!m) {
@@ -28,7 +32,7 @@ const ChatLine = ({ cmd, line }) => {
 	let { who, label, emotion, said } = m;
 	let whoCanon = who.toLowerCase().replaceAll(' ','-');
 	// let character = CHARACTERS[whoCanon] || MONSTERS[whoCanon];
-	let img;
+	let img = cmd && cmd.img;
 	// if (character) {
 	// 	if (emotion && character.emotion) img = character.emotion[emotion];
 	// 	if ( ! img) img = character.src;
