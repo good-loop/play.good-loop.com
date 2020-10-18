@@ -10,11 +10,11 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * gap://ready file:; style-src 'self' 'unsafe-inline' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; media-src * 'self' data: https: http:; img-src * data: 'unsafe-inline'; connect-src * 'unsafe-inline'; frame-src * 'unsafe-inline' 'unsafe-eval';">
 
     <title>Play!</title>
-    <link rel="shortcut icon" href="/img/gl-logo/LogoMark/logo.64.png" />
+    <link rel="shortcut icon" href="img/gl-logo/LogoMark/logo.64.png" />
     <link rel="manifest" href="manifest.webmanifest">
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/build/style/main.css">
+    <link rel="stylesheet" type="text/css" href="build/style/main.css">
 </head>
 
 <body>
@@ -23,7 +23,7 @@
 
     <footer class="footer d-none d-md-block">
 		<center>
-			<a href='https://good-loop.com' target='_blank'><img alt="logo" class="logo pull-left" src="/img/gl-logo/LogoMark/logo.png" /></a>
+			<a href='https://good-loop.com' target='_blank'><img alt="logo" class="logo pull-left" src="img/gl-logo/LogoMark/logo.png" /></a>
 			<p class="text-muted">
 				<span></span>Ads Against Humanity is &copy; Good-Loop Ltd, all rights reserved.</span>
 				Slogans and brand names are used here without endorsement.
@@ -70,7 +70,7 @@
 
         var filename = isDebug ? 'bundle-debug.js' : 'bundle.js';
         if (!isDebug) filename += '?cb=' + Math.random(); // force fresh loading on e.g. devices
-        document.write('<script src="/build/js/' + filename + '"/><\/script>');
+        document.write('<script src="build/js/' + filename + '"/><\/script>');
     </script>
 	<img src='//lg.good-loop.com/pxl' style='position:absolute;bottom:0px;left:0px;width:1;height:1;' />
 	<!-- Global site tag (gtag.js) - Google Analytics -->
