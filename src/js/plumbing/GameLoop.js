@@ -2,21 +2,29 @@
 
 import StopWatch from "../StopWatch";
 
-let gl = null;
-
 class GameLoop {
 	/**
 	 * @type {Function}
 	 */
 	onTick;
+	/**
+	 * @type {Function}
+	 */
 	onClose;
-	stop;
+	stopFlag;
 	/** @type {StopWatch} */
 	ticker;
+	
+	initFlag;
+	startFlag;
+	
+	/** @type {!Command[]} This is passed into Command.setQueue() */
+	cmdq = [];
 
 	close() {
-		this.stop = true;
-		if (onClose) onClose();
+		console.warn("close", this, new Error());
+		this.stopFlag = true;
+		if (this.onClose) onClose();
 	}
 
 	/**
@@ -24,42 +32,54 @@ class GameLoop {
 	 * @param {Function} onTick (EpochMSecs, StopWatch) -> any
 	 */
 	constructor({onTick, onClose}) {
-		// clean up previous
-		if (gl) {
-			gl.close();			
-		}
-		gl = this;
 		assMatch(onTick, Function);
 		this.onTick = onTick;
-		this.onClose = onClose;
-			
-		const gameLoop = () => {
-			if (gl.stop) {
-				console.log("GameLoop - STOPPED");
-				return;
-			}
-			//Call this `gameLoop` function on the next screen refresh
-			//(which happens 60 times per second)		
-			requestAnimationFrame(gameLoop);
-			// tick
-			let tick = StopWatch.update(gl.ticker);
-			if (tick) {
-				onTick(tick, gl.ticker);
-			}
-		};
-
-		// init
-		gl.ticker = new StopWatch();
-		gl.ticker.tickLength = 1000/10; // moderately slow steps
-		// update loop - use request ani frame
-		console.log("GameLoop - START");
-		gameLoop();
+		this.onClose = onClose;			
+		
+		this.ticker = new StopWatch();
+		this.ticker.tickLength = 1000/20; // snappy steps
+		
+		// start paused!
+		StopWatch.pause(this.ticker);
 	}
 };
 
-/**
- * @returns {?GameLoop}
- */
-GameLoop.get = () => gl;
+GameLoop.state = gl => {
+	if ( ! gl.startFlag) return "not-started";
+	if ( gl.stopFlag) return "stopped";
+	if (gl.ticker.paused) return "paused";
+	return "active";
+};
+GameLoop.str = gl => {
+	let state = GameLoop.state(gl);
+	return "GameLoop["+state+", tick:"+StopWatch.tick(gl.ticker)+", commands: "+gl.cmdq.length+"]";
+};
+
+GameLoop._loop = gl => {
+	if (gl.stopFlag) {
+		console.log("GameLoop - STOPPED");
+		return;
+	}
+	//Call this `gameLoop` function on the next screen refresh
+	//(which happens 60 times per second)		
+	requestAnimationFrame(() => GameLoop._loop(gl));
+	// tick
+	let tick = StopWatch.update(gl.ticker);
+	if (tick) {
+		gl.onTick(tick, gl.ticker);
+	}
+};
+
+GameLoop.pause = gl => {
+	StopWatch.pause(gl.ticker);
+};
+GameLoop.start = gl => {
+	gl.startFlag = true;
+	// Command Q
+	Command.setQueue(gl.cmdq);
+	StopWatch.start(gl.ticker);
+	// Go!
+	GameLoop._loop(gl);
+};
 
 export default GameLoop;

@@ -11,11 +11,7 @@ import Login from 'you-again';
 import DataStore from '../base/plumbing/DataStore';
 import { space, substr } from '../base/utils/miscutils';
 import MDText from '../base/components/MDText';
-import StoryTree from '../data/StoryTree';
-import Game from '../Game';
 import { Button } from 'reactstrap';
-import { CHARACTERS } from '../Character';
-import MONSTERS from '../MONSTERS';
 
 /**
  * regex for dialogue, e.g. `Mom: (happy) We're off!` or `Omega "Morphing Person": Welcome`
@@ -23,7 +19,7 @@ import MONSTERS from '../MONSTERS';
  */
 const rSpeech = /^([a-zA-Z0-9 ]+)("[a-zA-Z0-9 ]+")?: ?(\([a-z ]+\)|)(.+)/;
 
-const ChatLine = ({ line }) => {
+const ChatLine = ({ cmd, line }) => {
 	let m = splitLine(line);
 	if (!m) {
 		console.warn("ChatLine - no pattern match: " + line);
@@ -31,22 +27,22 @@ const ChatLine = ({ line }) => {
 	}
 	let { who, label, emotion, said } = m;
 	let whoCanon = who.toLowerCase().replaceAll(' ','-');
-	let character = CHARACTERS[whoCanon] || MONSTERS[whoCanon];
+	// let character = CHARACTERS[whoCanon] || MONSTERS[whoCanon];
 	let img;
-	if (character) {
-		if (emotion && character.emotion) img = character.emotion[emotion];
-		if ( ! img) img = character.src;
-	}
+	// if (character) {
+	// 	if (emotion && character.emotion) img = character.emotion[emotion];
+	// 	if ( ! img) img = character.src;
+	// }
 	// fallback
 	if ( ! img) {
-		img = '/img/src/person/' + space(who, emotion) + ".png";
+		img = '/img/person/' + space(who, emotion) + ".svg";
 	}
 	img = img.replaceAll(' ', '-').toLowerCase();
-	// HACK - track people you know
-	if (who===label && character) {
-		if ( ! Game.get().cast) Game.get().cast = {};
-		Game.get().cast[who] = true;
-	}
+	// // HACK - track people you know
+	// if (who===label && character) {
+	// 	if ( ! Game.get().cast) Game.get().cast = {};
+	// 	Game.get().cast[who] = true;
+	// }
 	// avoid any commands
 	said = said.replaceAll(/{[^}]+}/g, '');
 
@@ -55,6 +51,7 @@ const ChatLine = ({ line }) => {
 		<div className="who">{label}</div>
 		{img && img!=="none" && <img src={img} alt={label} />}
 		<div className="said"><MDText source={said} /></div>
+		{cmd && <Button color='primary' onClick={e => cmd.duration = 0}>&times;</Button>}
 	</div>;
 };
 

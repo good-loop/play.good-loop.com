@@ -60,10 +60,21 @@ class Command extends DataClass {
 		this.duration = msecs;
 		return this;
 	}
+	setBlocking() {
+		this.duration = 1000*60*60*24; // 1 day!
+		this.blocking = true;
+		return this;
+	}
 }
 DataClass.register(Command, 'Command');
 export default Command;
 
+/**
+ * 
+ * @param {Function} onStart Command => any
+ * @param {Function} onUpdate (Command, msecs, fraction) => any
+ * @param {Function} onEnd Command => any
+ */
 Command.setHandler = ({verb, onStart, onUpdate, onEnd}) => {
 	assMatch(verb, String);
 	starter4verb[verb] = onStart;
@@ -119,6 +130,19 @@ Command.tick = (tick) => {
  * @typedef {Command[]}
  */
 Command._q = [];
+
+/**
+ * Swap in a new queue. Use-case: for switching between GameLoops
+ * @param {!Command[]} q 
+ * @returns {Command[]} old queue
+ */
+Command.setQueue = q => {
+	assMatch(q, "Command[]");
+	const old = Command._q;
+	Command._q = q;
+	return old;
+};
+
 /**
  * 
  * @param {Command} command 

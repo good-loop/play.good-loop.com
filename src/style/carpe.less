@@ -2,29 +2,59 @@
 html, body, .page, #mainDiv {
 	height: 100%;
 }
+@calHeight: calc(100% - 4em);
+@blockHeight: calc((100vh - 4em)/14 - 2px);
+@blockWidth: @blockHeight; 
 
 #carpe {
 	overflow: hidden;
 }
-.dragover {
-	background-color: lightsalmon !important;
-}
+// .dragover {
+// 	background-color: lightsalmon !important;
+// }
 
 .score {
-	height: 1.5em;
+	height: 2em;
 }
 .inbox {
+	user-select: none;
 	background-color: #ccccff;
-	height: calc(100% - 2em);
+	height: @calHeight;
+	border: 3px solid rgba(0,0,0,0);
+	&.warning {
+		border-color: yellow;
+	}
+	&.danger {
+		border-color: red;
+	}
 }
 .email {
-	height: 12%;
+	font-size: 125%;
+	padding-left: 1em;
+	height: 16%;
 	border: 1px solid #333;
 	margin: 1px;
 	border-radius: 5px;
 	box-shadow: 2px 2px 2px rgba(92,92,92,0.5);
 }
+
+td.block {
+	// background-color: ;
+}
+
+td.gap, td.block {
+	width: @blockWidth;
+	height:  @blockHeight;
+	border: 1px solid black;
+	line-height: 1px; // allow slim
+}
+.defocus {
+	opacity: 70%;
+}
+
 .DayBox {
+	font-size: 80%; // a bit more room for text
+	overflow: hidden; // text just goes off :(
 	height: 100%;
 	border: 1px solid #999;
 	.DropZone {
@@ -32,8 +62,68 @@ html, body, .page, #mainDiv {
 		width: 100%;
 		height: 100%;
 	}
+	&.done {
+		opacity: 65%;
+	}
+	&.today {		
+		position: relative;
+		border: 1px solid #333;
+		.box-date {
+			font-weight: bold;
+		}
+		background-color: lightseagreen !important;
+		img.dr-evilstein {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			height: 80%;
+		}
+	}
+	&.weekend {
+		background-color: lightcoral;
+	}
+}
+.box-am, .box-pm {
+	height: 40%;
+	width: 100%;
+	border: 1px dotted #ccc;
+	// &.full {
+	// 	// background-color: darkgoldenrod;
+	// }
 }
 .calendar {
-	background-color: yellow;
-	height: calc(100% - 2em);
+	user-select: none;
+	background-color: lightyellow;
+	height: @calHeight;
+}
+.weekdays {
+	height: 1em;
+	text-align: center;
+}
+
+.chatline {
+	border: 2px solid black;
+	border-radius: 10px;
+	box-shadow: 2px 2px 2px 2px rgba(99,99,99,0.5);
+	min-height: 80px;
+	padding: 5px;
+	background: white;
+	position: fixed;
+	bottom: 100px;
+	right: 100px;
+	width: 530px; //98%; % was behaving weirdly on explore page	
+	min-width: 50%;
+	font-size: 150%;
+	.who {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	// .said {
+	// 	.handwritten();
+	// }
+	img {
+		margin-top: -100px;
+		float: right;
+		height: 175px;
+		max-width: 200px;
+	}	
 }

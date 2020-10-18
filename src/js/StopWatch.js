@@ -79,6 +79,10 @@ StopWatch.update = sw => {
 	return sw.tick;
 };
 
+/**
+ * @param {!StopWatch} sw 
+ * @returns {EpochMSecs} the current tick
+ */
 StopWatch.tick = sw => sw.tick;
 
 /**
