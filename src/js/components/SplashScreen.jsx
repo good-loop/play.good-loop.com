@@ -17,6 +17,7 @@ import { isMobile } from '../base/utils/miscutils';
 
 
 const SplashScreen = ({game}) => {	
+	window.document.title = "PA to Evil";
 	return <div id='SplashScreen'>
 		<BG src='/img/bg/james_vaugn_x-ray_delta_one_flickr_4970199230_e4e9de6a7a_c.jpg' fullscreen opacity={80} />
 		<h1><span className='caps'>PA</span> to <span className='caps'>E</span>vil</h1>
