@@ -113,7 +113,7 @@ let onTick = (tick, stopwatch) => {
 		}
 		// new week?
 		if (game.date.getDay() === 1) {
-			doq(new Command(null, "new-week"));
+			doq(new Command(null, "new-week").setDuration(200));
 			// speed up!
 			// NB average slots per task is 32/12, week-day slots per day = 10/7 -- so days need to go 2x faster
 			if (daySpawner.msecs > 300) {
@@ -154,6 +154,7 @@ Command.setHandler({
 	onStart:cmd => {
 		game.say = null;
 		GameLoop.pause(talkLoop);
+		GameLoop.pause(splashLoop);
 		GameLoop.start(gameLoop);
 	}
 });
@@ -212,8 +213,10 @@ Command.setHandler({
 	verb:"new-week", 
 	onStart:cmd => {
 		// TODO remove done-week dramatically
+		game.juiceNewWeek = true;
 	},
 	onEnd:cmd => {
+		game.juiceNewWeek = false;
 		// advance a week
 		game.date0.setDate(game.date0.getDate() + 7);
 	}
@@ -291,8 +294,20 @@ const CarpePage = () => {
 	// splash screen?
 	if (game.screen==='splash') {
 		if ( ! splashLoop.startFlag) {
+			// TODO
+			// let welcomeSong = new Howl({
+			// 	src: ['sound/sb_marchofmidnight.mp3'],
+			// 	autoplay: true,
+			// 	loop: true,
+			// 	volume: 0.5,
+			// 	onend: function () {
+			// 		console.log('Finished welcomeSong!');
+			// 	}
+			// });
+			// console.log("welcomeSong", welcomeSong);
+			// splashLoop on pause / stop
 			GameLoop.start(splashLoop);
-		}
+		}		
 		return <SplashScreen game={game} />;
 	}
 	// Start with the intro
@@ -368,7 +383,7 @@ const Calendar = () => {
 
 	return (<>
 	<div className='weekdays gridbox gridbox-sm-7'>{MWEEKDAYS.map(d => <div key={d}>{d}</div>)}</div>
-	<div className='calendar gridbox gridbox-sm-7'>		
+	<div className={space('calendar gridbox gridbox-sm-7', game.juiceNewWeek&&'juiceNewWeek')}>
 		{days.map(day => <DayBox key={day} sdate={day} dragover={on4sdate[day]}></DayBox>)}
 	</div></>);
 };
@@ -572,5 +587,6 @@ const DayBox = ({sdate, dragover}) => {
 };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 
 export default CarpePage;

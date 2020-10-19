@@ -24,15 +24,16 @@ html, body, .page, #mainDiv {
 	padding-left: 1em;
 	padding-right: 1em;
 	font-weight: bold;
-	font-family: Arial, Helvetica, sans-serif;
-	transition: all 0.4s;
+	font-family: Arial, Helvetica, sans-serif;	
 
-	// .juice {
-	// 	text-shadow: 0 0 1vh red;
-	// }
+	.juice {
+		transition: text-shadow 0.4s;
+		text-shadow: 0 0 1vh red;
+	}
 }
 
 .gamebox {
+	overflow: hidden;
 	height: calc(100% - 1.5em);
 }
 .inbox {
@@ -132,10 +133,17 @@ td.gap, td.block {
 	user-select: none;
 	background-color: lightyellow;
 	height: @calHeight;
+	
+	&.juiceNewWeek {
+		transition: margin-top 0.25s;
+		margin-top: -15vh; //20%; // @blockHeight;
+	}
 }
 .weekdays {
+	background-color: black;
 	height: 1em;
 	text-align: center;	
+	color:white;
 }
 
 .chatline {
@@ -248,6 +256,9 @@ td.gap, td.block {
     	color: white;
     	background: black;
     	width: 100%;
-    	left: 0;
+		left: 0;
+		height: 5vh;
 	}
 }
+
+

@@ -85,23 +85,4 @@ const HighScore = ({game={}}) => {
 	</div>;
 };
 
-// TODO
-// let themeSong = new Howl({
-// 	src: ['/snd/ran-n-bone-man-human.mp3'],
-// 	autoplay: true,
-// 	loop: true,
-// 	volume: 0.5,
-// 	onend: function () {
-// 		console.log('Finished!');
-// 	}
-// });
-
-// let playingFlag;
-// const playThemeSong = () => {
-// 	console.log("Play...");
-// 	themeSong.play();
-// 	playingFlag = true;
-// 	// DataStore.update(); upsets react in useEffect
-// };
-
 export default SplashScreen;

@@ -4,13 +4,17 @@ import StopWatch from "../StopWatch";
 
 class GameLoop {
 	/**
-	 * @type {Function}
+	 * @type {!Function}
 	 */
 	onTick;
 	/**
-	 * @type {Function}
+	 * @type {?Function}
 	 */
 	onClose;
+	/**
+	 * @type {?Function}
+	 */
+	onPause;
 	stopFlag;
 	/** @type {StopWatch} */
 	ticker;
@@ -23,12 +27,13 @@ class GameLoop {
 
 	/**
 	 * 
-	 * @param {Function} onTick (EpochMSecs, StopWatch) -> any
+	 * @param {!Function} onTick (EpochMSecs, StopWatch) -> any
 	 */
-	constructor({onTick, onClose}) {
+	constructor({onTick, onClose, onPause}) {
 		assMatch(onTick, Function);
 		this.onTick = onTick;
 		this.onClose = onClose;			
+		this.onPause = onPause;			
 		
 		this.ticker = new StopWatch();
 		this.ticker.tickLength = 1000/25; // 25fps fairly snappy steps
@@ -65,19 +70,30 @@ GameLoop._loop = gl => {
 };
 
 GameLoop.pause = gl => {
+	if (gl.ticker.paused) {
+		return;
+	}
 	StopWatch.pause(gl.ticker);
+	// pause music??
 };
 GameLoop.start = gl => {
 	gl.startFlag = true;
-	// Command Q
+	// pause other GameLoops
+
+	// swap Command Qs
 	Command.setQueue(gl.cmdq);
 	StopWatch.start(gl.ticker);
 	// Go!
 	GameLoop._loop(gl);
 };
+/**
+ * pause, set the stopFlag, and call onClose if one was provided
+ * @param {!GameLoop} gl 
+ */
 GameLoop.close = gl => {
-	console.warn("close", gl, new Error());
+	console.warn("close", gl, new Error());	
 	gl.stopFlag = true;
+	GameLoop.pause(gl);
 	if (gl.onClose) onClose();
 }
 
