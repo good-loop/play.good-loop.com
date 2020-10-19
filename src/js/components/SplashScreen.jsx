@@ -13,12 +13,20 @@ import { isMobile } from '../base/utils/miscutils';
 // import svg from '../img/angry-robot.svg';
 
 
+import { useHowl, Play } from 'rehowl'
+import DataStore from '../base/plumbing/DataStore';
 
-
-
+  
 const SplashScreen = ({game}) => {	
 	window.document.title = "PA to Evil";
+	let silent = DataStore.getValue('misc','silent') || false;
+	let snd = ! silent;
+	const { howl, state } = useHowl({
+		src: '/sound/sb_marchofmidnight.mp3'
+	  });
+  
 	return <div id='SplashScreen'>
+		{snd && <Play howl={howl} volume={0.7} />}
 		<BG src='/img/bg/james_vaugn_x-ray_delta_one_flickr_4970199230_e4e9de6a7a_c.jpg' fullscreen opacity={80} />
 		<h1><span className='caps'>PA</span> to <span className='caps'>E</span>vil</h1>
 		
@@ -37,12 +45,16 @@ const SplashScreen = ({game}) => {
 						</p>
 						<Button color='primary' size='lg' onClick={() => doq(new Command("game","screen"))}>Play!</Button>
 					</Card>
+					<div className='w-100 mt-2'>
+						<center><Button className='btn-circle' size='lg' color='info' onClick={e => DataStore.setValue(['misc','silent'], ! silent)} active={ ! silent} >{silent? "🔇" : "🔊"}</Button></center>
+					</div>
 				</Col>
 			</Row>
 			<div id='about'>
 				&copy; Daniel Winterstein 2020, with code from <a href='https://good-loop.com' target="_blank">Good-Loop</a> and
 				many other open-source heroes (see <a href='https://github.com/good-loop/play.good-loop.com' target="_blank">source code</a> for details).
-				Images from creative commons stars Benson Kua, James Vaugn, plus <a href='https://pixton.com' target="_blank">Pixton Edu</a> and Pixabay.
+				Images from creative commons stars Benson Kua, James Vaugn, plus <a href='https://pixton.com' target="_blank">Pixton Edu</a> and Pixabay. 
+				Music (cc) <a href='https://www.scottbuckley.com.au/' target='_blank'>Scott Buckley</a>.
 			</div>
 		</Container>
 		

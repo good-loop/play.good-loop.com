@@ -28,7 +28,7 @@ html, body, .page, #mainDiv {
 
 	.juice {
 		transition: text-shadow 0.4s;
-		text-shadow: 0 0 1vh red;
+		text-shadow: 0 0 0.2em #f33;
 	}
 }
 
@@ -133,6 +133,7 @@ td.gap, td.block {
 	user-select: none;
 	background-color: lightyellow;
 	height: @calHeight;
+	overflow: hidden;
 	
 	&.juiceNewWeek {
 		transition: margin-top 0.25s;
@@ -259,6 +260,10 @@ td.gap, td.block {
 		left: 0;
 		height: 5vh;
 	}
+}
+
+.btn-circle {
+	border-radius: 50%;
 }
 
 

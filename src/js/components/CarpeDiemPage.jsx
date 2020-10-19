@@ -1,3 +1,4 @@
+import { useHowl, Play } from 'rehowl'
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
@@ -294,18 +295,6 @@ const CarpePage = () => {
 	// splash screen?
 	if (game.screen==='splash') {
 		if ( ! splashLoop.startFlag) {
-			// TODO
-			// let welcomeSong = new Howl({
-			// 	src: ['sound/sb_marchofmidnight.mp3'],
-			// 	autoplay: true,
-			// 	loop: true,
-			// 	volume: 0.5,
-			// 	onend: function () {
-			// 		console.log('Finished welcomeSong!');
-			// 	}
-			// });
-			// console.log("welcomeSong", welcomeSong);
-			// splashLoop on pause / stop
 			GameLoop.start(splashLoop);
 		}		
 		return <SplashScreen game={game} />;
@@ -322,7 +311,13 @@ const CarpePage = () => {
 		doq(new Command(null, "start"));
 	}
 
+	const silent = DataStore.getValue('misc','silent');
+	const { howl } = silent? {} : useHowl({
+		src: '/sound/sb_discovery.mp3'
+	  });			
+
 	return (<Container fluid className="h-100 gameon">
+		{ ! silent && <Play howl={howl} volume={0.7} />}
 		<CSS css="footer{display:none !important;}" />
 <div className='score'>{Misc.dateTag(game.date)} <span className={space('pull-right', game.juiceScore&&"juice")}>Score {prettyNumber(Math.round(game.score), 10)}</span></div>
 		<Row className={space('gamebox',game.say&&"defocus")}>
@@ -356,7 +351,7 @@ const Email = ({email}) => {
 	let size = email.size || taskSizes[0];
 	return (<div className='email'>
 		<Row>
-			<Col>{email.msg}</Col>
+			<Col className='mt-2'>{email.msg}</Col>
 			<Col>
 				<Draggable id={email.id}><table><tbody>
 					<BlockRow srow={size[0]} color={email.color || 'brown'} />
@@ -374,8 +369,11 @@ const MWEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 const Calendar = () => {
 	let date = new Date(game.date0.getTime()); // copy so we can modify
 	let days = [];
-	for(let i=0; i<6*7; i++) {
-		days.push(isoDate(date));
+	for(let i=0; i<7*7; i++) {
+		let sd = isoDate(date);
+		if ( ! days.includes(sd)) { // odd 2x bug seen about 28th March - rounding error??
+			days.push(sd);
+		}
 		plus1Day(date);		
 	}
 	// what days are being dropped on?

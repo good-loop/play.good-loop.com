@@ -12,6 +12,7 @@
     "easy-enums": "^1.1.7",
     "fscreen": "^1.0.2",
     "fast-json-patch": "^3.0.0-1",
+    "howler": "^2.2.0",
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
@@ -26,6 +27,7 @@
     "react-scroll": "^1.7.12",
     "react-spring": "^8.0.27",
     "reactstrap": "^8.4.1",
+    "rehowl": "^0.6.0",
     "sjtest": "^0.4.9",
     "you-again": "^0.8.8"
   },
