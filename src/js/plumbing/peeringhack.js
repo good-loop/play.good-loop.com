@@ -3,7 +3,7 @@
  * 'cos I hit bugs with peer.js 
  * 
  */
-import Login from 'you-again';
+import Login from '../base/youagain';
 import _ from 'lodash';
 import Cookies from 'js-cookie';
 import DataStore from '../base/plumbing/DataStore';

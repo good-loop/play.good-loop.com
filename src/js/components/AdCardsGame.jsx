@@ -3,13 +3,10 @@
  * This is not a replacement for proper unit testing - but it is a lot better than debugging via repeated top-level testing.
  */
 import _ from 'lodash';
-import SJTest, { assert } from 'sjtest';
-import Login from 'you-again';
 import DataStore, { getValue, setValue } from '../base/plumbing/DataStore';
 import C from '../C';
 import DataClass, { nonce } from '../base/data/DataClass';
 import { randomPick, asNum } from '../base/utils/miscutils';
-import JSend from '../base/data/JSend';
 
 class AdCardsGame extends DataClass {
 

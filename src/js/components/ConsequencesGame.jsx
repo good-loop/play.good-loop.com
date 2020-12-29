@@ -5,8 +5,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
-import SJTest, {assert} from 'sjtest';
-import Login from 'you-again';
 import DataStore, { getValue, setValue } from '../base/plumbing/DataStore';
 import C from '../C';
 import Misc from '../base/components/Misc';

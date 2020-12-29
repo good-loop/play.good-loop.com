@@ -3,10 +3,8 @@
  *
  */
 import $ from 'jquery';
-import {SJTest, assert, assMatch} from 'sjtest';
 import C from '../C.js';
 
-import Login from 'you-again';
 
 // Try to avoid using this for modularity!
 import DataStore from '../base/plumbing/DataStore';

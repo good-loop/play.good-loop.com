@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Login from 'you-again';
+import Login from '../base/youagain';
 import { assert } from 'sjtest';
 import { modifyHash } from '../base/utils/miscutils';
 import _ from 'lodash';
