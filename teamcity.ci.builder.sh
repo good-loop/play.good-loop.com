@@ -5,7 +5,7 @@
 # Versions of this script are usually run by TeamCity, in response to a git commit.
 # The script uses ssh remote commands to target a server -- it does not affect the local machine.
 # For testing, the script can also be run from your local computer.
-#Version 1.4.1
+#Version 1.4.5
 # Latest Change -- Adding new dependency checks -- Attempting to create parity with production publisher template script
 
 #####  GENERAL SETTINGS
@@ -21,6 +21,7 @@ PROJECT_USES_NPM='yes' # yes or no
 PROJECT_USES_WEBPACK='yes' #yes or no
 PROJECT_USES_JERBIL='no' #yes or no
 PROJECT_USES_WWAPPBASE_SYMLINK='yes'
+BRANCH='master' # If changed -- you must also change the VCS settings for this project in teamcity
 
 # Where is the test server?
 TARGET_SERVERS=(egan.good-loop.com)
@@ -31,6 +32,7 @@ TARGET_SERVERS=(egan.good-loop.com)
 #####
 PROJECT_ROOT_ON_SERVER="/home/winterwell/$PROJECT_NAME"
 WWAPPBASE_REPO_PATH_ON_SERVER_DISK="/home/winterwell/wwappbase.js"
+PROJECT_LOG_FILE="$PROJECT_ROOT_ON_SERVER/logs/$PROJECT_NAME.log"
 
 
 ##### UNDENIABLY ESOTERIC SETTINGS
@@ -63,10 +65,11 @@ function send_alert_email {
 }
 
 
-# Git Cleanup Function -- More of a classic 'I type this too much, it should be a function', Function.
+# Git Cleanup Function -- More of a classic 'I type this too much, it should be a function', Function. This Function's Version is 1.01
 function git_hard_set_to_master {
     ssh winterwell@$server "cd $1 && git gc --prune=now"
-    ssh winterwell@$server "cd $1 && git pull origin master"
+    ssh winterwell@$server "cd $1 && git checkout -f $BRANCH"
+    ssh winterwell@$server "cd $1 && git pull origin $BRANCH"
     ssh winterwell@$server "cd $1 && git reset --hard FETCH_HEAD"
 }
 
@@ -245,7 +248,7 @@ function use_bob {
     fi
 }
 
-# NPM -- Evaluate and Use - This Function's Version is 0.01
+# NPM -- Evaluate and Use - This Function's Version is 0.02
 function use_npm {
     if [[ $PROJECT_USES_NPM = 'yes' ]]; then
         BUILD_PROCESS_NAME='npm'
@@ -261,7 +264,7 @@ function use_npm {
             printf "\nEnsuring all NPM Packages are in place on $server ...\n"
             ssh winterwell@$server "cd $PROJECT_ROOT_ON_SERVER && npm i &> $NPM_I_LOGFILE"
             printf "\nChecking for errors while npm was attempting to get packages on $server ...\n"
-            if [[ $(ssh winterwell@$server "grep -i 'error' $NPM_I_LOGFILE") = '' ]]; then
+            if [[ $(ssh winterwell@$server "grep -i 'error ' $NPM_I_LOGFILE") = '' ]]; then
                 printf "\nNPM package installer check : No mention of 'error' in $NPM_I_LOGFILE on $server\n"
             else
                 printf "\nNPM encountered one or more errors while attempting to get node packages. Sending Alert Emails, but Continuing Operation\n"
@@ -336,7 +339,6 @@ function start_service {
     fi
 }
 
-
 ################
 ### Run the Functions in Order
 ################
@@ -356,3 +358,4 @@ use_npm
 use_webpack
 use_jerbil
 start_service
+
