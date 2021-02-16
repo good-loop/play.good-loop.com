@@ -31,9 +31,9 @@
     "sjtest": "^0.4.9"
   },
   "scripts": {
-    "compile": "webpack --config $PWD/webpack.config.js --progress --colors && ./gitstamp.sh",
-    "compile-watch": "webpack --config $PWD/webpack.config.js --progress --colors --watch",
-    "compile-watch-fast": "NO_PROD=true webpack --config $PWD/webpack.config.js --progress --colors --watch",
+    "compile": "webpack --config $PWD/webpack.config.js --progress --color && ./gitstamp.sh",
+    "compile-watch": "webpack --config $PWD/webpack.config.js --progress --color --watch",
+    "compile-watch-fast": "NO_PROD=true webpack --config $PWD/webpack.config.js --progress --color --watch",
     "test": "jest",
     "type-check": "tsc --noEmit"
   },
