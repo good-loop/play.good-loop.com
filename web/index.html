@@ -61,7 +61,7 @@
         var isDebug = window.location.hostname.match(/^local/) || window.location.hostname.match(/^test/);
 
         // Has the user specified debug/production build with a URL param?
-        var debugParam = window.location.search.match(/debug=(\w+)/i);
+	var debugParam = (""+window.location).match(/debug=(\w+)/i); // NB: .search misses parameters after a #
         if (debugParam && debugParam[1]) {
             // Require an exact match to change from default
             if (debugParam[1] === 'false') isDebug = false;
@@ -70,7 +70,7 @@
 
         var filename = isDebug ? 'bundle-debug.js' : 'bundle.js';
         if (!isDebug) filename += '?cb=' + Math.random(); // force fresh loading on e.g. devices
-        document.write('<script src="build/js/' + filename + '"/><\/script>');
+	document.write('<script src="/build/js/' + filename + '"/><\/script>');
     </script>
 	<img src='//lg.good-loop.com/pxl' style='position:absolute;bottom:0px;left:0px;width:1;height:1;' />
 	<!-- Global site tag (gtag.js) - Google Analytics -->
