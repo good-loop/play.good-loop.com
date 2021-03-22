@@ -12,6 +12,7 @@ public class BuildPlay extends BuildWinterwellProject {
 
 	public BuildPlay() {
 		super("play.good-loop.com");
+		setVersion("0.8.0"); // 22 Mar 2021
 	}
 
 	@Override
