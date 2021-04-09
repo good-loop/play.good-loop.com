@@ -319,7 +319,7 @@ const CarpePage = () => {
 	return (<Container fluid className="h-100 gameon">
 		{ ! silent && <Play howl={howl} volume={0.7} />}
 		<CSS css="footer{display:none !important;}" />
-<div className='score'>{Misc.dateTag(game.date)} <span className={space('pull-right', game.juiceScore&&"juice")}>Score {prettyNumber(Math.round(game.score), 10)}</span></div>
+<div className='score'>{Misc.DateTag(game.date)} <span className={space('pull-right', game.juiceScore&&"juice")}>Score {prettyNumber(Math.round(game.score), 10)}</span></div>
 		<Row className={space('gamebox',game.say&&"defocus")}>
 			<Col sm={4}><Inbox /></Col>
 			<Col sm={8} ><Calendar /></Col>
