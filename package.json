@@ -23,11 +23,12 @@
     "react-autocomplete": "^1.8.1",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.1.0",
-    "react-markdown": "^4.3.1",
+    "react-markdown": "^5.0.3",
     "react-scroll": "^1.7.12",
     "react-spring": "^8.0.27",
-    "reactstrap": "^8.5.1",
+    "reactstrap": "^8.8.1",
     "rehowl": "^0.6.0",
+    "remark-gfm": "^1.0.0"
     "sjtest": "^0.4.9"
   },
   "scripts": {
