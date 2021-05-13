@@ -8,6 +8,7 @@ import org.eclipse.jetty.util.ajax.JSON;
 import com.winterwell.utils.Dep;
 import com.winterwell.utils.containers.ArrayMap;
 import com.winterwell.utils.web.SimpleJson;
+import com.winterwell.utils.web.WebUtils2;
 import com.winterwell.web.FakeBrowser;
 import com.winterwell.web.ajax.JSend;
 import com.winterwell.web.app.CommonFields;
@@ -35,7 +36,7 @@ public class UnsplashServlet implements IServlet {
 				"query",q, 
 				"content_filter", "high"
 				));
-		Map jobj = (Map) JSON.parse(json);
+		Map jobj = (Map) WebUtils2.parseJSON(json);
 		List<Map> results = SimpleJson.getList(jobj, "results");
 		return results;
 	}

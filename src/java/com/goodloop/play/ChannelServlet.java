@@ -7,6 +7,7 @@ import com.winterwell.utils.containers.Containers;
 import com.winterwell.utils.time.TUnit;
 import com.winterwell.utils.time.Time;
 import com.winterwell.utils.web.SimpleJson;
+import com.winterwell.utils.web.WebUtils2;
 import com.winterwell.web.ajax.JSend;
 import com.winterwell.web.ajax.JThing;
 import com.winterwell.web.app.CrudServlet;
@@ -53,11 +54,11 @@ public class ChannelServlet implements IServlet {
 		String room = state.get("room");
 		String diff = state.get("diff");
 		if (diff!=null) {
-			Object jdiff = JSON.parse(diff);
+			Object jdiff = WebUtils2.parseJSON(diff);
 			List<Map> diffs = Containers.asList(jdiff);
 			channel.room = applyDiff(channel.room, diffs);
 		} else if (room != null) {
-			Map jroom = (Map) JSON.parse(room);
+			Map jroom = (Map) WebUtils2.parseJSON(room);
 			channel.room = merge(channel.room, jroom);
 		}
 		String peerId = state.get("peerId");
