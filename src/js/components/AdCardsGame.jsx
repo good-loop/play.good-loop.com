@@ -100,7 +100,8 @@ AdCardsGame.setup = game => {
 	const n = game.playerIds.length;
 	game.playerState = {};
 	game.playerIds.forEach(playerId => {
-		game.playerState[playerId] = { hand: [], score: randomPick(["seasonal lull", "just warming up", "um...", "there's some great stuff in the pipeline"]) };
+		game.playerState[playerId] = { hand: [], score: randomPick(["seasonal lull", "just warming up", "um...", 
+		"there's some great stuff in the pipeline"]) };
 	});
 	// deal slogan cards
 	shuffle(game.slogans);
