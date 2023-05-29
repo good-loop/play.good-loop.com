@@ -11,9 +11,10 @@
 // ========================================================================
 //
 
-package org.eclipse.jetty.demo;
+package com.goodloop.play.websocket;
 
 import org.eclipse.jetty.websocket.server.JettyServerUpgradeRequest;
+
 import org.eclipse.jetty.websocket.server.JettyServerUpgradeResponse;
 import org.eclipse.jetty.websocket.server.JettyWebSocketCreator;
 

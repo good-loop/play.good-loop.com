@@ -11,7 +11,7 @@ import com.winterwell.utils.io.FileUtils;
 public class BuildGoose extends BuildWinterwellProject {
 
 	public BuildGoose() {
-		super("goose");
+		super(new File("."), "goose");
 		setVersion("0.0.1"); 
 	}
 
@@ -21,7 +21,10 @@ public class BuildGoose extends BuildWinterwellProject {
 		MavenDependencyTask mdt = new MavenDependencyTask();
 		mdt.addDependency("com.google.guava", "guava", "28.2-jre");
 		
-		mdt.addDependency("org.eclipse.jetty.websocket:websocket-server:9.4.28.v20200408");
+		String jversion = "10.0.15";
+		mdt.addDependency("org.eclipse.jetty.websocket:websocket-jetty-api:"+jversion);
+		mdt.addDependency("org.eclipse.jetty.websocket:websocket-jetty-server:"+jversion);
+//		mdt.addDependency("org.eclipse.jetty.websocket:websocket-server:"+jversion); // version??
 		
 		deps.add(mdt);
 		return deps;

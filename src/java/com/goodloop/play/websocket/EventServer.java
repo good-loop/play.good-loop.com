@@ -22,7 +22,7 @@ import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerI
 
 public class EventServer
 {
-    private static final Logger LOG = LoggerFactory.getLogger(EventServer.class);
+//    private static final Logger LOG = LoggerFactory.getLogger(EventServer.class);
 
     public static void main(String[] args) throws Exception
     {
