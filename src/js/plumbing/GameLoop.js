@@ -4,7 +4,7 @@ import StopWatch from "../StopWatch";
 
 class GameLoop {
 	/**
-	 * @type {!Function}
+	 * @type {!Function} (tick:Number, StopWatch)
 	 */
 	onTick;
 	/**

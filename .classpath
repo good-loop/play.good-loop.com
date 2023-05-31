@@ -8,49 +8,42 @@
 	<classpathentry kind="src" path="builder"/>
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="test/java"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.webappbase"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.datalog"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.bob"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.utils"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.web"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.depot"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="dependencies/guava.jar"/>
-	<classpathentry kind="lib" path="dependencies/checker-qual.jar"/>
-	<classpathentry kind="lib" path="dependencies/error_prone_annotations.jar"/>
-	<classpathentry kind="lib" path="dependencies/failureaccess.jar"/>
-	<classpathentry kind="lib" path="dependencies/j2objc-annotations.jar"/>
-	<classpathentry kind="lib" path="dependencies/javax.servlet-api.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-client.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-http.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-io.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-security.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-server.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-servlet.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-util.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-xml.jar"/>
-	<classpathentry kind="lib" path="dependencies/jsr305.jar"/>
-	<classpathentry kind="lib" path="dependencies/listenablefuture.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-api.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-client.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-common.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-server.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-servlet.jar"/>
 	<classpathentry kind="lib" path="dependencies/asm.jar"/>
 	<classpathentry kind="lib" path="dependencies/asm-commons.jar"/>
 	<classpathentry kind="lib" path="dependencies/asm-tree.jar"/>
+	<classpathentry kind="lib" path="dependencies/checker-qual.jar"/>
+	<classpathentry kind="lib" path="dependencies/error_prone_annotations.jar"/>
+	<classpathentry kind="lib" path="dependencies/failureaccess.jar"/>
+	<classpathentry kind="lib" path="dependencies/guava.jar"/>
+	<classpathentry kind="lib" path="dependencies/j2objc-annotations.jar"/>
 	<classpathentry kind="lib" path="dependencies/jakarta.annotation-api.jar"/>
 	<classpathentry kind="lib" path="dependencies/jakarta.transaction-api.jar"/>
+	<classpathentry kind="lib" path="dependencies/jakarta.websocket-api.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-alpn-client.jar"/>
 	<classpathentry kind="lib" path="dependencies/jetty-annotations.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-client.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-http.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-io.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-javax-websocket-api.jar"/>
 	<classpathentry kind="lib" path="dependencies/jetty-jndi.jar"/>
 	<classpathentry kind="lib" path="dependencies/jetty-plus.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-security.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-server.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-servlet.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-servlet-api.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-util.jar"/>
 	<classpathentry kind="lib" path="dependencies/jetty-webapp.jar"/>
+	<classpathentry kind="lib" path="dependencies/jetty-xml.jar"/>
+	<classpathentry kind="lib" path="dependencies/jsr305.jar"/>
+	<classpathentry kind="lib" path="dependencies/listenablefuture.jar"/>
 	<classpathentry kind="lib" path="dependencies/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="dependencies/websocket-core-client.jar"/>
 	<classpathentry kind="lib" path="dependencies/websocket-core-common.jar"/>
 	<classpathentry kind="lib" path="dependencies/websocket-core-server.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-jetty-api.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-jetty-common.jar"/>
-	<classpathentry kind="lib" path="dependencies/websocket-jetty-server.jar"/>
-	<classpathentry kind="lib" path="dependencies/jetty-servlet-api.jar"/>
+	<classpathentry kind="lib" path="dependencies/websocket-javax-client.jar"/>
+	<classpathentry kind="lib" path="dependencies/websocket-javax-common.jar"/>
+	<classpathentry kind="lib" path="dependencies/websocket-javax-server.jar"/>
+	<classpathentry kind="lib" path="dependencies/websocket-servlet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

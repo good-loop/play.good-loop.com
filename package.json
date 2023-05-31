@@ -1,7 +1,7 @@
 {
   "name": "play.good-loop.com",
   "version": "0.1.0",
-  "description": "Cards Against Humanity",
+  "description": "Fast Game Link",
   "author": "Daniel Winterstein",
   "repository": {
     "url": "https://github.com/good-loop/play.good-loop.com",
@@ -17,19 +17,7 @@
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.20",
     "md5": "^2.3.0",
-    "peerjs": "^1.2.0",
-    "promise-value": "^1.2.10",
-    "react": "^16.13.1",
-    "react-autocomplete": "^1.8.1",
-    "react-dom": "^16.13.1",
-    "react-dropzone": "^11.1.0",
-    "react-markdown": "^5.0.3",
-    "react-scroll": "^1.7.12",
-    "react-spring": "^8.0.27",
-    "reactstrap": "^8.8.1",
-    "rehowl": "^0.6.0",
-    "remark-gfm": "^1.0.0"
-    "sjtest": "^0.4.9"
+    "rehowl": "^0.6.0"
   },
   "scripts": {
     "compile": "webpack --config $PWD/webpack.config.js --progress --color && ./gitstamp.sh",
@@ -66,23 +54,13 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "intl": "^1.2.5",
     "jest": "^26.1.0",
-    "jest-environment-puppeteer": "^4.4.0",
-    "jest-puppeteer": "^4.4.0",
     "less": "^3.12.2",
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.9.0",
-    "puppeteer": "^4.0.1",
     "shelljs": "^0.8.4",
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "yargs": "^15.4.1"
-  },
-  "jest": {
-    "preset": "jest-puppeteer",
-    "globals": {
-      "window": {}
-    },
-    "testTimeout": 20000
   }
 }
