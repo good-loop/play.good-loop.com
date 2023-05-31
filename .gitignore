@@ -15,4 +15,3 @@ dependencies
 config/version.properties
 build-lib
 play.good-loop.com.jar
-*.jar
