@@ -13,15 +13,19 @@
 
 package com.goodloop.play.websocket;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.jetty.util.ajax.JSON;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+import com.goodloop.play.data.GameState;
+import com.winterwell.gson.Gson;
 import com.winterwell.utils.log.Log;
 
 public class EventEndpoint extends WebSocketAdapter
@@ -36,12 +40,21 @@ public class EventEndpoint extends WebSocketAdapter
         Log.d("Endpoint connected: {}", sess);
     }
 
+    
+    GameState gameState = new GameState();
+    
     @Override
     public void onWebSocketText(String message)
     {
         super.onWebSocketText(message);
         Log.d("Received TEXT message: {}", message);
-
+        String json = Gson.toJSON(gameState);
+        try {
+			getRemote().sendString(json);
+		} catch (IOException e) {
+			Log.e(e);
+		}
+        
         if (message.toLowerCase(Locale.US).contains("bye"))
         {
             getSession().close(StatusCode.NORMAL, "Thanks");

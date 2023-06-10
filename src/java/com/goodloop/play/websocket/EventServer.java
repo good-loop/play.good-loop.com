@@ -20,8 +20,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 
+import com.winterwell.utils.log.Log;
+
 public class EventServer
 {
+	private static final String LOGTAG = "EventServer";
+
 //    private static final Logger LOG = LoggerFactory.getLogger(EventServer.class);
 
     public static void main(String[] args) throws Exception
@@ -54,6 +58,7 @@ public class EventServer
             wsContainer.setMaxTextMessageSize(65535);
 
             // Add websockets
+            Log.d(LOGTAG, "addMapping");
             wsContainer.addMapping("/events/*", new EventEndpointCreator());
         });
     }
@@ -65,6 +70,7 @@ public class EventServer
 
     public void start() throws Exception
     {
+    	Log.d(LOGTAG, "start port "+connector.getPort());
         server.start();
     }
 

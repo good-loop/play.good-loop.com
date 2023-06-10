@@ -21,9 +21,15 @@ public class BuildGoose extends BuildWinterwellProject {
 		MavenDependencyTask mdt = new MavenDependencyTask();
 		mdt.addDependency("com.google.guava", "guava", "28.2-jre");
 		
+
+		mdt.addDependency("org.slf4j", "slf4j-simple", "2.0.6");
+		
 		String jversion = "10.0.15";
 		String jakarta = "1.1.2";
 		
+		mdt.addDependency("org.eclipse.jetty","jetty-util",jversion);
+		mdt.addDependency("org.eclipse.jetty","jetty-util-ajax",jversion);
+
       mdt.addDependency("jakarta.websocket:jakarta.websocket-api:"+jakarta);
 //	    <!-- To run javax.websocket in embedded server -->
       mdt.addDependency("org.eclipse.jetty.websocket:websocket-javax-server:"+jversion);
