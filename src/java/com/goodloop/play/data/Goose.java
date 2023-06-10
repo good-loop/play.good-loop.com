@@ -5,7 +5,7 @@ public class Goose extends Sprite {
 	public Goose() {
 		id="goose";
 		x = vec(0,0);
-		dx = vec(1,2);
+		dx = vec(4,2);
 		width=20;
 		height=20;
 	}
