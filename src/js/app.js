@@ -45,7 +45,13 @@ function getUpdate2(json) {
 }
 
 function addSprite(game, sprite) {
-  let $sprite = PIXI.Sprite.from('https://pixijs.io/guides/static/images/sample.png');
+  let $sprite = 
+    // = PIXI.Sprite.from('https://pixijs.io/guides/static/images/sample.png');
+    PIXI.AnimatedSprite.fromFrames(game.animations["geese/row-1-column"]);
+
+    // configure + start animation:
+    $sprite.animationSpeed = 1 / 6;                     // 6 fps
+    $sprite.play();
   game.app.stage.addChild($sprite);    
   game.$sprite4id[sprite.id] = $sprite;
   console.log("addSprite", sprite, $sprite);
@@ -76,6 +82,8 @@ function startGameWS() {
 
 function startGamePixi() {
   game.app = new PIXI.Application({ width: 640, height: 360 });
+  game.animations = PIXI.Assets.cache.get("/build/img/spritesheet.json").data.animations;
+
   document.body.appendChild(game.app.view);
   addSprite(game, {id:"1"});
   // Add a variable to count up the seconds our demo has been running
@@ -83,7 +91,16 @@ function startGamePixi() {
   // Tell our application's ticker to run a new callback every frame, passing
   // in the amount of time that has passed since the last tick
   game.app.ticker.add(onTick);
+
+  console.warn(game.animations, "animations");
 }
+
+
+PIXI.Assets.load([
+  "/build/img/spritesheet.json"
+]).then(() => {
+  startGame();
+});
 
 function startGame() {
   startGameWS();
@@ -91,4 +108,4 @@ function startGame() {
 };
 
 
-setTimeout(startGame, 100); // allow document to load
+// setTimeout(startGame, 100); // allow document to load
