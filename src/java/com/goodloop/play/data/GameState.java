@@ -12,11 +12,17 @@ public class GameState {
 
 	StopWatch ticker = new StopWatch();
 	List<Sprite> sprites = new ArrayList();
-	List<Sprite> tiles = new ArrayList();
+	Sprite[][] tiles = new Sprite[10][10];
 	
 	public GameState() {
-		// TODO Auto-generated constructor stub
 		sprites.add(new Goose());
+		sprites.add(new Dragon());
+		for(int x=0; x<5; x++) {
+			for(int y=0; y<5; y++) {
+				tiles[x][y] = new Tile(x,y);
+			}
+		}
+		
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {

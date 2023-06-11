@@ -15,11 +15,9 @@ window.game = game;
 function onTick(delta) {
   // Add the time to our total elapsed time
   game.elapsed += delta;
-  // Update the sprite's X position based on the cosine of our elapsed time.  We divide
-  // by 50 to slow the animation down a bit...
-  game.$sprite4id["1"].x = 100.0 + Math.cos(game.elapsed/50.0) * 100.0;
-  // console.log(game.$sprite4id);
+  // TODO if the server comms are going slow -- then update based on dx
 }
+ 
 
 // debounce
 let getUpdateStatus = false;
@@ -33,6 +31,17 @@ function getUpdate2(json) {
   getUpdateStatus = false; 
   let serverState = JSON.parse(json);
   game.serverState = serverState;
+
+  game.serverState.tiles.forEach(sprite => {
+    assert(sprite.id, sprite);
+    let $sprite = game.$sprite4id[sprite.id];
+    if ( ! $sprite) {      
+      $sprite = addSprite(game, sprite);
+    }
+    $sprite.x = sprite.x[0];
+    $sprite.y = sprite.x[1];
+  });
+
   game.serverState.sprites.forEach(sprite => {
     assert(sprite.id, sprite);
     let $sprite = game.$sprite4id[sprite.id];
@@ -45,10 +54,19 @@ function getUpdate2(json) {
 }
 
 function addSprite(game, sprite) {
-  let $sprite = 
-    // = PIXI.Sprite.from('https://pixijs.io/guides/static/images/sample.png');
-    PIXI.AnimatedSprite.fromFrames(game.animations["geese/row-1-column"]);
-
+  let textureName = sprite.texture;
+  let $sprite;
+  if (game.animations[textureName]) {   
+    // = PIXI.Sprite.from('https://pixijs.io/guides/static/images/sample.png');   
+    //  
+    $sprite = PIXI.AnimatedSprite.fromFrames(game.animations[textureName]);
+  } else if (game.spritesheetData.frames[textureName]) {
+    let frame = game.spritesheetData.frames[textureName];
+    $sprite = PIXI.Sprite.from(frame);
+  } else {
+    console.error(textureName);
+    return;
+  }
     // configure + start animation:
     $sprite.animationSpeed = 1 / 6;                     // 6 fps
     $sprite.play();
@@ -73,7 +91,7 @@ function startGameWS() {
   // };
 
   game.ws.onmessage = function(msg) {    
-    document.querySelector('#messages').innerHTML = `<div>${msg.data}</div>`;
+    // document.querySelector('#messages').innerHTML = `<div>${msg.data}</div>`;
     getUpdate2(msg.data);
   };
 
@@ -82,10 +100,11 @@ function startGameWS() {
 
 function startGamePixi() {
   game.app = new PIXI.Application({ width: 640, height: 360 });
-  game.animations = PIXI.Assets.cache.get("/build/img/spritesheet.json").data.animations;
+  game.spritesheetData = PIXI.Assets.cache.get("/build/img/spritesheet.json").data;
+  game.animations = game.spritesheetData.animations;
 
   document.body.appendChild(game.app.view);
-  addSprite(game, {id:"1"});
+  // addSprite(game, {id:"1"});
   // Add a variable to count up the seconds our demo has been running
   game.elapsed = 0.0;
   // Tell our application's ticker to run a new callback every frame, passing

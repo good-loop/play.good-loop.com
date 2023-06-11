@@ -1,13 +1,20 @@
 package com.goodloop.play.data;
 
+import com.winterwell.utils.Utils;
+
 public class Sprite {
 
+	public Sprite() {
+		id= getClass().getSimpleName()+"_"+Utils.getNonce();
+	}
 
-	public static double[] vec(int x, int y) {
+	public static double[] vec(double x, double y) {
 		return new double[] {x,y};
 	}
 	
 	String id;
+	
+	String texture;
 	
 	double[] x;
 	double[] dx;
