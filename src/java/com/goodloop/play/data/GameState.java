@@ -12,6 +12,9 @@ public class GameState {
 
 	StopWatch ticker = new StopWatch();
 	List<Sprite> sprites = new ArrayList();
+	/**
+	 * x,y
+	 */
 	Sprite[][] tiles = new Sprite[10][10];
 	
 	public GameState() {

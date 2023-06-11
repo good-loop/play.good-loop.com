@@ -32,18 +32,26 @@ function getUpdate2(json) {
   let serverState = JSON.parse(json);
   game.serverState = serverState;
 
-  game.serverState.tiles.forEach(sprite => {
-    assert(sprite.id, sprite);
-    let $sprite = game.$sprite4id[sprite.id];
-    if ( ! $sprite) {      
-      $sprite = addSprite(game, sprite);
+  // tiles
+  let tw = game.serverState.tiles.length;
+  let th = game.serverState.tiles[0].length;
+  for(let tx=0; tx<tw; tx++) {
+    for(let ty=0; ty<th; ty++) {
+      let sprite = game.serverState.tiles[tx][ty];
+      if ( ! sprite) continue;
+      assert(sprite.id, sprite);
+      let $sprite = game.$sprite4id[sprite.id];
+      if ( ! $sprite) {      
+        $sprite = addSprite(game, sprite);
+      }
+      $sprite.x = sprite.x[0];
+      $sprite.y = sprite.x[1];  
     }
-    $sprite.x = sprite.x[0];
-    $sprite.y = sprite.x[1];
-  });
+  }
 
   game.serverState.sprites.forEach(sprite => {
     assert(sprite.id, sprite);
+    if ( ! sprite) return;
     let $sprite = game.$sprite4id[sprite.id];
     if ( ! $sprite) {      
       $sprite = addSprite(game, sprite);
@@ -60,16 +68,18 @@ function addSprite(game, sprite) {
     // = PIXI.Sprite.from('https://pixijs.io/guides/static/images/sample.png');   
     //  
     $sprite = PIXI.AnimatedSprite.fromFrames(game.animations[textureName]);
+        // configure + start animation:
+        $sprite.animationSpeed = 1/20;
+        $sprite.play();
+    
   } else if (game.spritesheetData.frames[textureName]) {
-    let frame = game.spritesheetData.frames[textureName];
-    $sprite = PIXI.Sprite.from(frame);
+    // let frame = game.spritesheetData.frames[textureName];
+    let texture = PIXI.Texture.from(textureName);
+    $sprite = PIXI.Sprite.from(texture);
   } else {
     console.error(textureName);
     return;
   }
-    // configure + start animation:
-    $sprite.animationSpeed = 1 / 6;                     // 6 fps
-    $sprite.play();
   game.app.stage.addChild($sprite);    
   game.$sprite4id[sprite.id] = $sprite;
   console.log("addSprite", sprite, $sprite);
