@@ -3,6 +3,8 @@ import $ from 'jquery';
 import '../style/main.less';
 import * as PIXI from 'pixi.js';
 import { assert } from './base/utils/assert';
+import Key from './rge/js/Key';
+import { space } from './base/utils/miscutils';
 
 
 // global jquery for You-Again
@@ -59,6 +61,10 @@ function getUpdate2(json) {
     $sprite.x = sprite.x[0];
     $sprite.y = sprite.x[1];
   });
+
+  // HACK info
+  let $arrows = document.getElementById("arrows");
+  $arrows.innerHTML = space(keyLeft.isDown && "Left", keyRight.isDown && "Right");
 }
 
 function addSprite(game, sprite) {
@@ -109,7 +115,7 @@ function startGameWS() {
 }
 
 function startGamePixi() {
-  game.app = new PIXI.Application({ width: 640, height: 360 });
+  game.app = new PIXI.Application({ width: 1200, height: 500 });
   game.spritesheetData = PIXI.Assets.cache.get("/build/img/spritesheet.json").data;
   game.animations = game.spritesheetData.animations;
 
@@ -131,9 +137,21 @@ PIXI.Assets.load([
   startGame();
 });
 
+/** @type{Key} */
+let keyLeft, keyRight, ketUp, keyDown;
+
+function startGameControls() {
+  keyLeft = new Key("ArrowLeft");
+  keyRight = new Key("ArrowRight");
+  keyUp = new Key("ArrowUp");
+  keyDown = new Key("ArrowDown");
+}
+
+
 function startGame() {
   startGameWS();
   startGamePixi();
+  startGameControls();
 };
 
 

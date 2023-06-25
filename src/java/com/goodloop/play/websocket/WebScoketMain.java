@@ -22,7 +22,7 @@ import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerI
 
 import com.winterwell.utils.log.Log;
 
-public class EventServer
+public class WebScoketMain
 {
 	private static final String LOGTAG = "EventServer";
 
@@ -30,7 +30,7 @@ public class EventServer
 
     public static void main(String[] args) throws Exception
     {
-        EventServer server = new EventServer();
+        WebScoketMain server = new WebScoketMain();
         server.setPort(8080);
         server.start();
         server.join();
@@ -39,7 +39,7 @@ public class EventServer
     private final Server server;
     private final ServerConnector connector;
 
-    public EventServer()
+    public WebScoketMain()
     {
         server = new Server();
         connector = new ServerConnector(server);
